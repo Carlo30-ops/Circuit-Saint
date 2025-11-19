@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Circuit Saint</string>
+    <string name="price_format">$%.2f</string>
+    <string name="price_per_unit_format">$%.2f c/u</string>
+    <string name="total_purchase_format">Compra finalizada. Total: $%.2f</string>
+    <string name="stock_format">Stock disponible: %d</string>
 </resources>
-

@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import com.circuitsaint.R
 import com.circuitsaint.databinding.ActivityProductDetailBinding
 import com.circuitsaint.viewmodel.StoreViewModel
 import com.circuitsaint.viewmodel.StoreViewModelFactory
@@ -85,8 +86,8 @@ class ProductDetailActivity : AppCompatActivity() {
             product?.let {
                 binding.productName.text = it.name
                 binding.productDescription.text = it.description
-                binding.productPrice.text = "$${String.format("%.2f", it.price)}"
-                binding.productStock.text = "Stock disponible: ${it.stock}"
+                binding.productPrice.text = getString(R.string.price_format, it.price)
+                binding.productStock.text = getString(R.string.stock_format, it.stock)
 
                 updateButtonsState(it.stock)
 
@@ -116,4 +117,3 @@ class ProductDetailActivity : AppCompatActivity() {
         }
     }
 }
-

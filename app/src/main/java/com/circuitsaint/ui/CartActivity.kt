@@ -9,6 +9,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.circuitsaint.R
 import com.circuitsaint.databinding.ActivityCartBinding
 import com.circuitsaint.data.db.CartItemWithProduct
 import com.circuitsaint.viewmodel.StoreViewModel
@@ -83,7 +84,7 @@ class CartActivity : AppCompatActivity() {
 
         viewModel.totalPrice.observe(this, Observer { total ->
             val totalPrice = total ?: 0.0
-            binding.totalPrice.text = "$${String.format("%.2f", totalPrice)}"
+            binding.totalPrice.text = getString(R.string.price_format, totalPrice)
         })
     }
 
@@ -95,7 +96,7 @@ class CartActivity : AppCompatActivity() {
                 if (success) {
                     Toast.makeText(
                         this,
-                        "Compra finalizada. Total: $${String.format("%.2f", totalPrice)}",
+                        getString(R.string.total_purchase_format, totalPrice),
                         Toast.LENGTH_LONG
                     ).show()
                     finish()
@@ -155,9 +156,9 @@ class CartAdapter(
             val subtotal = price * quantity
 
             binding.cartItemName.text = cartItemWithProduct.name
-            binding.cartItemPrice.text = "$${String.format("%.2f", price)} c/u"
+            binding.cartItemPrice.text = binding.root.context.getString(R.string.price_per_unit_format, price)
             binding.cartItemQuantity.text = quantity.toString()
-            binding.cartItemSubtotal.text = "$${String.format("%.2f", subtotal)}"
+            binding.cartItemSubtotal.text = binding.root.context.getString(R.string.price_format, subtotal)
 
             binding.btnIncreaseQuantity.setOnClickListener {
                 onQuantityIncrease(cartItem.id, quantity)
@@ -189,4 +190,3 @@ class CartAdapter(
         }
     }
 }
-
