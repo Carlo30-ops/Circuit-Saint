@@ -12,10 +12,19 @@ interface ProductDao {
     fun getAllProducts(): LiveData<List<Product>>
     
     @Query("SELECT * FROM products WHERE activo = 1 ORDER BY created_at DESC")
+    suspend fun getAllProductsSuspend(): List<Product>
+
+    @Query("SELECT * FROM products WHERE activo = 1 AND nombre LIKE '%' || :query || '%' ORDER BY created_at DESC")
+    suspend fun searchProducts(query: String): List<Product>
+    
+    @Query("SELECT * FROM products WHERE activo = 1 ORDER BY created_at DESC")
     fun getAllProductsFlow(): Flow<List<Product>>
     
     @Query("SELECT * FROM products WHERE activo = 1 AND categoria = :categoria ORDER BY created_at DESC")
     fun getProductsByCategory(categoria: String): LiveData<List<Product>>
+    
+    @Query("SELECT * FROM products WHERE activo = 1 AND categoria = :categoria ORDER BY created_at DESC")
+    suspend fun getProductsByCategorySuspend(categoria: String): List<Product>
     
     @Query("SELECT DISTINCT categoria FROM products WHERE activo = 1 ORDER BY categoria")
     suspend fun getCategories(): List<String>

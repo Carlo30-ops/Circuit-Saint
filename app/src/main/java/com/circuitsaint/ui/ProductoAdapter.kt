@@ -5,6 +5,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.circuitsaint.R
 import com.circuitsaint.data.model.Product
 import com.circuitsaint.databinding.ItemProductoBinding
 
@@ -34,6 +36,12 @@ class ProductoAdapter(
             binding.productDescription.text = product.description
             binding.productPrice.text = "$${String.format("%.2f", product.price)}"
 
+            Glide.with(binding.productImage.context)
+                .load(product.imageUrl)
+                .placeholder(R.drawable.ic_placeholder_image)
+                .error(R.drawable.ic_placeholder_image)
+                .into(binding.productImage)
+
             binding.addToCartButton.setOnClickListener {
                 onItemClick(product)
             }
@@ -54,4 +62,3 @@ class ProductoAdapter(
         }
     }
 }
-

@@ -26,6 +26,10 @@ class StoreRepository(private val database: AppDatabase) {
     // Product operations
     fun getAllProducts(): LiveData<List<Product>> = productDao.getAllProducts()
     
+    suspend fun getAllProductsSuspend(): List<Product> = productDao.getAllProductsSuspend()
+
+    suspend fun searchProducts(query: String): List<Product> = productDao.searchProducts(query)
+    
     fun getAllProductsFlow(): Flow<List<Product>> = productDao.getAllProductsFlow()
     
     suspend fun getProductById(productId: Long): Product? = productDao.getProductById(productId)
@@ -171,5 +175,7 @@ class StoreRepository(private val database: AppDatabase) {
     
     fun getProductsByCategory(categoria: String): LiveData<List<Product>> = 
         productDao.getProductsByCategory(categoria)
+        
+    suspend fun getProductsByCategorySuspend(categoria: String): List<Product> = 
+        productDao.getProductsByCategorySuspend(categoria)
 }
-

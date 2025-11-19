@@ -20,22 +20,22 @@ class StoreViewModel(application: Application) : AndroidViewModel(application) {
     val cartItems: LiveData<List<CartItemWithProduct>>
     val cartItemCount: LiveData<Int>
     val totalPrice: LiveData<Double?>
-    
+
     private val _checkoutState = MutableLiveData<Order?>()
     val checkoutState: LiveData<Order?> = _checkoutState
-    
+
     val allOrders: LiveData<List<Order>>
-    
+
     val allContacts: LiveData<List<com.circuitsaint.data.model.Contact>>
     val unreadContactCount: LiveData<Int>
-    
+
     private val _formSubmissionLiveData = MutableLiveData<Triple<String, String, String>>()
     val formSubmissionLiveData: LiveData<Triple<String, String, String>> = _formSubmissionLiveData
-    
+
     init {
         val database = AppDatabase.getDatabase(application)
         repository = StoreRepository(database)
-        
+
         allProducts = repository.getAllProducts()
         cartItems = repository.getCartItemsWithProducts()
         cartItemCount = repository.getCartItemCount()
@@ -44,65 +44,65 @@ class StoreViewModel(application: Application) : AndroidViewModel(application) {
         allContacts = repository.getAllContacts()
         unreadContactCount = repository.getUnreadContactCount()
     }
-    
+
     fun getProductById(productId: Long): LiveData<Product?> {
         return repository.getProductByIdLiveData(productId)
     }
-    
+
     fun insertProduct(product: Product) {
         viewModelScope.launch {
             repository.insertProduct(product)
         }
     }
-    
+
     fun insertProducts(products: List<Product>) {
         viewModelScope.launch {
             repository.insertProducts(products)
         }
     }
-    
+
     fun updateProduct(product: Product) {
         viewModelScope.launch {
             repository.updateProduct(product)
         }
     }
-    
+
     fun deleteProduct(product: Product) {
         viewModelScope.launch {
             repository.deleteProduct(product)
         }
     }
-    
+
     fun addToCart(productId: Long, quantity: Int = 1) {
         viewModelScope.launch {
             repository.addToCart(productId, quantity)
         }
     }
-    
+
     fun updateCartItemQuantity(cartItemId: Long, quantity: Int) {
         viewModelScope.launch {
             repository.updateCartItemQuantity(cartItemId, quantity)
         }
     }
-    
+
     fun removeFromCart(productId: Long) {
         viewModelScope.launch {
             repository.removeFromCart(productId)
         }
     }
-    
+
     fun removeCartItem(cartItemId: Long) {
         viewModelScope.launch {
             repository.removeCartItem(cartItemId)
         }
     }
-    
+
     fun clearCart() {
         viewModelScope.launch {
             repository.clearCart()
         }
     }
-    
+
     fun checkout(
         clienteNombre: String,
         clienteEmail: String,
@@ -113,7 +113,7 @@ class StoreViewModel(application: Application) : AndroidViewModel(application) {
             _checkoutState.postValue(order)
         }
     }
-    
+
     fun submitForm(name: String, email: String, message: String, telefono: String? = null) {
         viewModelScope.launch {
             val contact = com.circuitsaint.data.model.Contact(
@@ -126,11 +126,11 @@ class StoreViewModel(application: Application) : AndroidViewModel(application) {
             _formSubmissionLiveData.postValue(Triple(name, email, message))
         }
     }
-    
+
     fun getProductsByCategory(categoria: String): LiveData<List<Product>> {
         return repository.getProductsByCategory(categoria)
     }
-    
+
     suspend fun getCategories(): List<String> {
         return repository.getCategories()
     }
