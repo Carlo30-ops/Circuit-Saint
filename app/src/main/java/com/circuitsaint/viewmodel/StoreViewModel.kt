@@ -3,6 +3,7 @@ package com.circuitsaint.viewmodel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.circuitsaint.data.db.AppDatabase
 import com.circuitsaint.data.db.CartItemWithProduct
@@ -18,6 +19,12 @@ class StoreViewModel(application: Application) : AndroidViewModel(application) {
     val cartItems: LiveData<List<CartItemWithProduct>>
     val cartItemCount: LiveData<Int>
     val totalPrice: LiveData<Double?>
+    
+    private val _checkoutState = MutableLiveData<Boolean>()
+    val checkoutState: LiveData<Boolean> = _checkoutState
+    
+    private val _formSubmissionLiveData = MutableLiveData<Triple<String, String, String>>()
+    val formSubmissionLiveData: LiveData<Triple<String, String, String>> = _formSubmissionLiveData
     
     init {
         val database = AppDatabase.getDatabase(application)
@@ -85,6 +92,18 @@ class StoreViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             repository.clearCart()
         }
+    }
+    
+    fun checkout() {
+        viewModelScope.launch {
+            val success = repository.checkout()
+            _checkoutState.postValue(success)
+        }
+    }
+    
+    fun submitForm(name: String, email: String, message: String) {
+        // guardar temporalmente o emitir evento
+        _formSubmissionLiveData.postValue(Triple(name, email, message))
     }
 }
 

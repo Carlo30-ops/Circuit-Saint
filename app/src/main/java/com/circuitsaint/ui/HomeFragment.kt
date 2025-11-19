@@ -11,6 +11,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.circuitsaint.databinding.FragmentHomeBinding
 import com.circuitsaint.viewmodel.StoreViewModel
+import com.circuitsaint.viewmodel.StoreViewModelFactory
 
 class HomeFragment : Fragment() {
     
@@ -65,16 +66,3 @@ class HomeFragment : Fragment() {
         _binding = null
     }
 }
-
-// Factory para crear el ViewModel
-class StoreViewModelFactory(private val application: android.app.Application) :
-    androidx.lifecycle.ViewModelProvider.Factory {
-    override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(StoreViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return StoreViewModel(application) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
-}
-

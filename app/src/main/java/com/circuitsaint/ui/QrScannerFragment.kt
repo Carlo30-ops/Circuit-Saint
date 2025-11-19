@@ -1,152 +1,135 @@
 package com.circuitsaint.ui
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.media.RingtoneManager
 import android.os.Bundle
+import android.os.Vibrator
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.circuitsaint.databinding.FragmentQrScannerBinding
-import com.google.zxing.ResultPoint
+import com.circuitsaint.util.PerformanceOptimizer
 import com.journeyapps.barcodescanner.BarcodeCallback
 import com.journeyapps.barcodescanner.BarcodeResult
 import com.journeyapps.barcodescanner.DecoratedBarcodeView
 
 class QrScannerFragment : Fragment() {
-
     private var _binding: FragmentQrScannerBinding? = null
     private val binding get() = _binding!!
+    private var isScanning = false
 
-    private var barcodeView: DecoratedBarcodeView? = null
-
-    private val callback = object : BarcodeCallback {
-        override fun barcodeResult(result: BarcodeResult?) {
-            if (result?.text != null) {
-                // Detener el escaneo
-                barcodeView?.pause()
-                
-                // Procesar el resultado del QR
-                handleQrResult(result.text)
-            }
-        }
-
-        override fun possibleResultPoints(resultPoints: MutableList<ResultPoint>?) {
-            // Opcional: mostrar puntos de resultado
-        }
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentQrScannerBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        barcodeView = binding.barcodeScanner
-
-        // Configurar el escáner
-        barcodeView?.decodeContinuous(callback)
-
-        // Verificar permisos de cámara
-        if (ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.CAMERA
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            requestPermissions(
-                arrayOf(Manifest.permission.CAMERA),
-                CAMERA_PERMISSION_REQUEST_CODE
-            )
-        } else {
-            startScanning()
-        }
-
-        binding.btnOpenForm.setOnClickListener {
-            // Abrir formulario directamente
-            openFormActivity()
-        }
-    }
-
-    private fun startScanning() {
-        barcodeView?.resume()
-    }
-
-    private fun handleQrResult(qrText: String) {
-        // El QR puede contener un URL o un código que vincula al formulario
-        when {
-            qrText.startsWith("http://") || qrText.startsWith("https://") -> {
-                // Si es un URL, abrir el formulario
-                openFormActivity()
-            }
-            qrText.startsWith("FORM:") -> {
-                // Si tiene prefijo FORM:, extraer datos
-                val formData = qrText.removePrefix("FORM:")
-                openFormActivity(formData)
-            }
-            else -> {
-                // Cualquier otro texto, abrir formulario con el texto como código
-                openFormActivity(qrText)
-            }
-        }
-    }
-
-    private fun openFormActivity(code: String = "") {
-        val intent = FormActivity.newIntent(requireContext(), code)
-        startActivity(intent)
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                startScanning()
-            } else {
-                Toast.makeText(
-                    requireContext(),
-                    "Se necesita permiso de cámara para escanear QR",
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-        }
-    }
-
     override fun onResume() {
         super.onResume()
-        if (ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.CAMERA
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            barcodeView?.resume()
+        PerformanceOptimizer.optimizeCameraForBattery(requireContext())
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(Manifest.permission.CAMERA), REQUEST_CAMERA)
+        } else {
+            startScanner()
+        }
+    }
+
+    private fun startScanner() {
+        if (isScanning) return
+        isScanning = true
+
+        binding.barcodeView.decodeContinuous(object : BarcodeCallback {
+            override fun barcodeResult(result: BarcodeResult?) {
+                result?.let { r ->
+                    // debounce multiple reads
+                    if (!isScanning) return
+                    isScanning = false
+
+                    // feedback
+                    vibrateOnce()
+                    val beep = RingtoneManager.getRingtone(requireContext(), RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                    beep.play()
+
+                    handleScanResult(r.text)
+                    // stop preview briefly
+                    binding.barcodeView.pause()
+                    binding.root.postDelayed({
+                        // resume scanning after 1.5s
+                        binding.barcodeView.resume()
+                        isScanning = true
+                    }, 1500)
+                }
+            }
+            override fun possibleResultPoints(resultPoints: MutableList<com.google.zxing.ResultPoint>?) {}
+        })
+    }
+
+    private fun handleScanResult(text: String) {
+        // JSON detection
+        val trimmed = text.trim()
+        if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
+            // could parse JSON and act accordingly
+            if (trimmed.contains("\"form\"") || trimmed.contains("circuit_saint")) {
+                // open form
+                val i = Intent(requireContext(), FormActivity::class.java)
+                i.putExtra(FormActivity.EXTRA_QR_DATA, trimmed)
+                startActivity(i)
+                return
+            }
+        }
+        // URL detection
+        if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
+            val i = Intent(Intent.ACTION_VIEW, android.net.Uri.parse(trimmed))
+            startActivity(i)
+            return
+        }
+        // Plain text: show in dialog
+        androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setTitle("Contenido QR")
+            .setMessage(trimmed)
+            .setPositiveButton("OK", null)
+            .show()
+    }
+
+    private fun vibrateOnce() {
+        val v = requireContext().getSystemService(android.content.Context.VIBRATOR_SERVICE) as? Vibrator
+        v?.let {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                it.vibrate(android.os.VibrationEffect.createOneShot(100, android.os.VibrationEffect.DEFAULT_AMPLITUDE))
+            } else {
+                // deprecated but safe fallback
+                @Suppress("DEPRECATION")
+                it.vibrate(100)
+            }
         }
     }
 
     override fun onPause() {
         super.onPause()
-        barcodeView?.pause()
+        binding.barcodeView.pause()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        barcodeView?.pause()
         _binding = null
+        isScanning = false
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if (requestCode == REQUEST_CAMERA && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            startScanner()
+        } else {
+            androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setMessage("Necesitamos permiso a la cámara para escanear QR.")
+                .setPositiveButton("OK", null)
+                .show()
+        }
     }
 
     companion object {
-        private const val CAMERA_PERMISSION_REQUEST_CODE = 1002
+        private const val REQUEST_CAMERA = 1001
     }
 }
-

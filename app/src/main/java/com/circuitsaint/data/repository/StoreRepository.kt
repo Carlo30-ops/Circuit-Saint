@@ -74,5 +74,26 @@ class StoreRepository(private val database: AppDatabase) {
     suspend fun removeCartItem(cartItemId: Long) = cartDao.deleteCartItemById(cartItemId)
     
     suspend fun clearCart() = cartDao.clearCart()
+    
+    suspend fun checkout(): Boolean {
+        val items = cartDao.getAllCartWithProducts()
+        // check stocks
+        for (item in items) {
+            val product = productDao.getProductById(item.cartItem.productId)
+            if (product == null || product.stock < item.cartItem.quantity) {
+                return false // not enough stock
+            }
+        }
+        // update stocks and clear cart
+        for (item in items) {
+            val product = productDao.getProductById(item.cartItem.productId)
+            product?.let {
+                val newStock = it.stock - item.cartItem.quantity
+                productDao.updateProductStock(it.id, newStock)
+            }
+        }
+        cartDao.clearCart()
+        return true
+    }
 }
 

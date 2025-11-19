@@ -55,6 +55,13 @@ interface CartDao {
     
     @Query("SELECT SUM(products.price * cart_items.quantity) FROM cart_items INNER JOIN products ON cart_items.productId = products.id")
     fun getTotalPrice(): LiveData<Double?>
+    
+    @Query("""
+        SELECT cart_items.*, products.name, products.price, products.imageUrl, products.description
+        FROM cart_items
+        INNER JOIN products ON cart_items.productId = products.id
+    """)
+    suspend fun getAllCartWithProducts(): List<CartItemWithProduct>
 }
 
 data class CartItemWithProduct(

@@ -90,13 +90,23 @@ class CartActivity : AppCompatActivity() {
     private fun finalizePurchase() {
         val totalPrice = viewModel.totalPrice.value ?: 0.0
         if (totalPrice > 0) {
-            Toast.makeText(
-                this,
-                "Compra finalizada. Total: $${String.format("%.2f", totalPrice)}",
-                Toast.LENGTH_LONG
-            ).show()
-            viewModel.clearCart()
-            finish()
+            viewModel.checkout()
+            viewModel.checkoutState.observe(this) { success ->
+                if (success) {
+                    Toast.makeText(
+                        this,
+                        "Compra finalizada. Total: $${String.format("%.2f", totalPrice)}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    finish()
+                } else {
+                    Toast.makeText(
+                        this,
+                        "Error: No hay suficiente stock para algunos productos",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
         } else {
             Toast.makeText(this, "El carrito está vacío", Toast.LENGTH_SHORT).show()
         }

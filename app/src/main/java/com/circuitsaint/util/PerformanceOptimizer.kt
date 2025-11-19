@@ -1,99 +1,44 @@
 package com.circuitsaint.util
 
-import android.app.Activity
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.os.Build
-import android.os.PowerManager
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
+import android.util.Log
 
-/**
- * Utilidad para optimizar el consumo de batería y memoria
- */
-object PerformanceOptimizer : LifecycleObserver {
+object PerformanceOptimizer {
 
-    private var wakeLock: PowerManager.WakeLock? = null
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    fun optimizeBitmapBytes(resBytes: ByteArray, maxWidth: Int = 800, maxHeight: Int = 800): ByteArray {
+        // load bounds
+        val opts = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+        BitmapFactory.decodeByteArray(resBytes, 0, resBytes.size, opts)
+        var (w, h) = opts.outWidth to opts.outHeight
+        var inSampleSize = 1
+        if (h > maxHeight || w > maxWidth) {
+            val halfW = w / 2
+            val halfH = h / 2
+            while (halfH / inSampleSize >= maxHeight && halfW / inSampleSize >= maxWidth) {
+                inSampleSize *= 2
+            }
+        }
+        val opts2 = BitmapFactory.Options().apply { this.inSampleSize = inSampleSize }
+        val bmp = BitmapFactory.decodeByteArray(resBytes, 0, resBytes.size, opts2)
+        val baos = java.io.ByteArrayOutputStream()
+        bmp.compress(android.graphics.Bitmap.CompressFormat.JPEG, 70, baos)
+        return baos.toByteArray()
+    }
 
-    /**
-     * Configura optimizaciones de batería
-     */
-    fun setupBatteryOptimizations(context: Context) {
-        // Deshabilitar animaciones en dispositivos con batería baja
-        if (isBatteryLow(context)) {
-            // Reducir animaciones y efectos visuales
+    fun configureMapForLowMemory(context: Context) {
+        // Placeholder for any map-specific optimizations if needed
+        // e.g. disable heavy map UI when low memory
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val am = context.getSystemService(Context.ACTIVITY_SERVICE) as android.app.ActivityManager
+            if (am.isLowRamDevice) {
+                Log.i("PerfOpt", "Low-RAM device: apply light-weight map config")
+            }
         }
     }
 
-    /**
-     * Verifica si la batería está baja
-     */
-    private fun isBatteryLow(context: Context): Boolean {
-        val batteryManager = context.getSystemService(Context.BATTERY_SERVICE) as? android.os.BatteryManager
-        return batteryManager?.getIntProperty(android.os.BatteryManager.BATTERY_PROPERTY_CAPACITY) ?: 100 < 20
-    }
-
-    /**
-     * Limpia recursos cuando la app está en background
-     */
-    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-    fun onPause() {
-        // Liberar wake lock si existe
-        wakeLock?.release()
-        wakeLock = null
-    }
-
-    /**
-     * Optimiza memoria liberando recursos no utilizados
-     */
-    fun optimizeMemory(context: Context) {
-        // Sugerir al sistema que ejecute garbage collection
-        System.gc()
-        
-        // Limpiar cachés si es necesario
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            (context as? Activity)?.window?.setFlags(
-                android.view.WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
-                android.view.WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED
-            )
-        }
-    }
-
-    /**
-     * Configura el lifecycle observer para optimizaciones automáticas
-     */
-    fun observeLifecycle(lifecycleOwner: LifecycleOwner) {
-        lifecycleOwner.lifecycle.addObserver(this)
-    }
-
-    /**
-     * Limpia todos los recursos
-     */
-    fun cleanup() {
-        wakeLock?.release()
-        wakeLock = null
-        scope.cancel()
+    fun optimizeCameraForBattery(context: Context) {
+        // set camera to lower resolution for scanning if needed
     }
 }
-
-/**
- * Extension para optimizar imágenes y reducir uso de memoria
- */
-fun android.graphics.Bitmap.optimizeForMemory(): android.graphics.Bitmap {
-    // Reducir calidad de imagen si es muy grande
-    val maxSize = 1024
-    if (width > maxSize || height > maxSize) {
-        val scale = maxSize.toFloat() / width.coerceAtLeast(height)
-        val newWidth = (width * scale).toInt()
-        val newHeight = (height * scale).toInt()
-        return android.graphics.Bitmap.createScaledBitmap(this, newWidth, newHeight, true)
-    }
-    return this
-}
-

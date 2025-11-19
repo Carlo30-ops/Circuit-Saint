@@ -37,5 +37,8 @@ interface ProductDao {
     
     @Query("DELETE FROM products")
     suspend fun deleteAllProducts()
+    
+    @Query("UPDATE products SET stock = :newStock WHERE id = :productId")
+    suspend fun updateProductStock(productId: Long, newStock: Int)
 }
 

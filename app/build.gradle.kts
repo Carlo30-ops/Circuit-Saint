@@ -88,3 +88,9 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 }
 
+// Workaround for kapt issue in JDK 16+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KaptGenerateStubs> {
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+}
