@@ -8,11 +8,17 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ProductDao {
     
-    @Query("SELECT * FROM products")
+    @Query("SELECT * FROM products WHERE activo = 1 ORDER BY created_at DESC")
     fun getAllProducts(): LiveData<List<Product>>
     
-    @Query("SELECT * FROM products")
+    @Query("SELECT * FROM products WHERE activo = 1 ORDER BY created_at DESC")
     fun getAllProductsFlow(): Flow<List<Product>>
+    
+    @Query("SELECT * FROM products WHERE activo = 1 AND categoria = :categoria ORDER BY created_at DESC")
+    fun getProductsByCategory(categoria: String): LiveData<List<Product>>
+    
+    @Query("SELECT DISTINCT categoria FROM products WHERE activo = 1 ORDER BY categoria")
+    suspend fun getCategories(): List<String>
     
     @Query("SELECT * FROM products WHERE id = :productId")
     suspend fun getProductById(productId: Long): Product?

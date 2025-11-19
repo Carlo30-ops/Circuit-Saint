@@ -16,6 +16,9 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         
+        // Inicializar seed data si es necesario
+        com.circuitsaint.util.DatabaseSeeder.seedDatabase(this)
+        
         setupBottomNavigation()
         
         if (savedInstanceState == null) {

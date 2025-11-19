@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.circuitsaint.data.db.AppDatabase
 import com.circuitsaint.data.db.CartItemWithProduct
+import com.circuitsaint.data.model.Order
 import com.circuitsaint.data.model.Product
 import com.circuitsaint.data.repository.StoreRepository
 import kotlinx.coroutines.launch
@@ -20,8 +21,13 @@ class StoreViewModel(application: Application) : AndroidViewModel(application) {
     val cartItemCount: LiveData<Int>
     val totalPrice: LiveData<Double?>
     
-    private val _checkoutState = MutableLiveData<Boolean>()
-    val checkoutState: LiveData<Boolean> = _checkoutState
+    private val _checkoutState = MutableLiveData<Order?>()
+    val checkoutState: LiveData<Order?> = _checkoutState
+    
+    val allOrders: LiveData<List<Order>>
+    
+    val allContacts: LiveData<List<com.circuitsaint.data.model.Contact>>
+    val unreadContactCount: LiveData<Int>
     
     private val _formSubmissionLiveData = MutableLiveData<Triple<String, String, String>>()
     val formSubmissionLiveData: LiveData<Triple<String, String, String>> = _formSubmissionLiveData
@@ -34,6 +40,9 @@ class StoreViewModel(application: Application) : AndroidViewModel(application) {
         cartItems = repository.getCartItemsWithProducts()
         cartItemCount = repository.getCartItemCount()
         totalPrice = repository.getTotalPrice()
+        allOrders = repository.getAllOrders()
+        allContacts = repository.getAllContacts()
+        unreadContactCount = repository.getUnreadContactCount()
     }
     
     fun getProductById(productId: Long): LiveData<Product?> {
@@ -94,16 +103,36 @@ class StoreViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
     
-    fun checkout() {
+    fun checkout(
+        clienteNombre: String,
+        clienteEmail: String,
+        clienteTelefono: String? = null
+    ) {
         viewModelScope.launch {
-            val success = repository.checkout()
-            _checkoutState.postValue(success)
+            val order = repository.checkout(clienteNombre, clienteEmail, clienteTelefono)
+            _checkoutState.postValue(order)
         }
     }
     
-    fun submitForm(name: String, email: String, message: String) {
-        // guardar temporalmente o emitir evento
-        _formSubmissionLiveData.postValue(Triple(name, email, message))
+    fun submitForm(name: String, email: String, message: String, telefono: String? = null) {
+        viewModelScope.launch {
+            val contact = com.circuitsaint.data.model.Contact(
+                nombre = name,
+                email = email,
+                telefono = telefono,
+                mensaje = message
+            )
+            repository.insertContact(contact)
+            _formSubmissionLiveData.postValue(Triple(name, email, message))
+        }
+    }
+    
+    fun getProductsByCategory(categoria: String): LiveData<List<Product>> {
+        return repository.getProductsByCategory(categoria)
+    }
+    
+    suspend fun getCategories(): List<String> {
+        return repository.getCategories()
     }
 }
 

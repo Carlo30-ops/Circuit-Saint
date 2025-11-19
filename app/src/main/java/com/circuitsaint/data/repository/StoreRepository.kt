@@ -4,8 +4,14 @@ import androidx.lifecycle.LiveData
 import com.circuitsaint.data.db.AppDatabase
 import com.circuitsaint.data.db.CartDao
 import com.circuitsaint.data.db.CartItemWithProduct
+import com.circuitsaint.data.db.ContactDao
+import com.circuitsaint.data.db.OrderDao
+import com.circuitsaint.data.db.OrderItemDao
 import com.circuitsaint.data.db.ProductDao
 import com.circuitsaint.data.model.CartItem
+import com.circuitsaint.data.model.Contact
+import com.circuitsaint.data.model.Order
+import com.circuitsaint.data.model.OrderItem
 import com.circuitsaint.data.model.Product
 import kotlinx.coroutines.flow.Flow
 
@@ -13,6 +19,9 @@ class StoreRepository(private val database: AppDatabase) {
     
     private val productDao: ProductDao = database.productDao()
     private val cartDao: CartDao = database.cartDao()
+    private val orderDao: OrderDao = database.orderDao()
+    private val orderItemDao: OrderItemDao = database.orderItemDao()
+    private val contactDao: ContactDao = database.contactDao()
     
     // Product operations
     fun getAllProducts(): LiveData<List<Product>> = productDao.getAllProducts()
@@ -75,25 +84,92 @@ class StoreRepository(private val database: AppDatabase) {
     
     suspend fun clearCart() = cartDao.clearCart()
     
-    suspend fun checkout(): Boolean {
+    suspend fun checkout(
+        clienteNombre: String,
+        clienteEmail: String,
+        clienteTelefono: String? = null
+    ): Order? {
         val items = cartDao.getAllCartWithProducts()
-        // check stocks
+        if (items.isEmpty()) return null
+        
+        // Verificar stock
         for (item in items) {
             val product = productDao.getProductById(item.cartItem.productId)
             if (product == null || product.stock < item.cartItem.quantity) {
-                return false // not enough stock
+                return null // Stock insuficiente
             }
         }
-        // update stocks and clear cart
-        for (item in items) {
-            val product = productDao.getProductById(item.cartItem.productId)
-            product?.let {
-                val newStock = it.stock - item.cartItem.quantity
-                productDao.updateProductStock(it.id, newStock)
-            }
+        
+        // Calcular total
+        val total = items.sumOf { it.price * it.cartItem.quantity }
+        
+        // Generar número de pedido
+        val todayCount = orderDao.getTodayOrderCount()
+        val dateStr = java.text.SimpleDateFormat("yyyyMMdd", java.util.Locale.getDefault()).format(java.util.Date())
+        val numeroPedido = "CS-$dateStr-${String.format("%04d", todayCount + 1)}"
+        
+        // Crear pedido
+        val order = Order(
+            numero_pedido = numeroPedido,
+            cliente_nombre = clienteNombre,
+            cliente_email = clienteEmail,
+            cliente_telefono = clienteTelefono,
+            total = total,
+            estado = "pendiente"
+        )
+        val orderId = orderDao.insertOrder(order)
+        
+        // Crear items del pedido y actualizar stock
+        val orderItems = items.map { item ->
+            val product = productDao.getProductById(item.cartItem.productId)!!
+            val newStock = product.stock - item.cartItem.quantity
+            productDao.updateProductStock(product.id, newStock)
+            
+            OrderItem(
+                pedido_id = orderId,
+                producto_id = item.cartItem.productId,
+                cantidad = item.cartItem.quantity,
+                precio_unitario = item.price,
+                subtotal = item.price * item.cartItem.quantity
+            )
         }
+        orderItemDao.insertOrderItems(orderItems)
+        
+        // Limpiar carrito
         cartDao.clearCart()
-        return true
+        
+        return order.copy(id = orderId)
     }
+    
+    // Order operations
+    fun getAllOrders(): LiveData<List<Order>> = orderDao.getAllOrders()
+    
+    suspend fun getOrderById(orderId: Long): Order? = orderDao.getOrderById(orderId)
+    
+    fun getOrderByIdLiveData(orderId: Long): LiveData<Order?> = orderDao.getOrderByIdLiveData(orderId)
+    
+    fun getOrdersByEmail(email: String): LiveData<List<Order>> = orderDao.getOrdersByEmail(email)
+    
+    suspend fun updateOrderEstado(orderId: Long, estado: String) = 
+        orderDao.updateOrderEstado(orderId, estado)
+    
+    fun getOrderItemsWithProducts(orderId: Long): LiveData<List<com.circuitsaint.data.db.OrderItemWithProduct>> =
+        orderItemDao.getOrderItemsWithProducts(orderId)
+    
+    // Contact operations
+    fun getAllContacts(): LiveData<List<Contact>> = contactDao.getAllContacts()
+    
+    suspend fun insertContact(contact: Contact): Long = contactDao.insertContact(contact)
+    
+    suspend fun updateContactLeido(contactId: Long, leido: Boolean) = 
+        contactDao.updateContactLeido(contactId, leido)
+    
+    fun getUnreadContactCount(): LiveData<Int> = contactDao.getUnreadContactCount()
+    
+    // Product category operations
+    suspend fun getCategories(): List<String> = productDao.getCategories()
+    
+    fun getProductsByCategory(categoria: String): LiveData<List<Product>> = 
+        productDao.getProductsByCategory(categoria)
 }
 

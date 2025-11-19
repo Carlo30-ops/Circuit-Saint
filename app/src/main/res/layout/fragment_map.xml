@@ -1,50 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/map_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/jojo_background"
     tools:context=".ui.MapFragment">
 
-    <FrameLayout
-        android:id="@+id/map_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/card_info"
+    <!-- Header Neon -->
+    <LinearLayout
+        android:id="@+id/headerContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/jojo_background"
+        android:padding="16dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical">
+            
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@android:drawable/ic_menu_mylocation"
+                app:tint="@color/jojo_primary" />
+                
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="UBICACIÓN"
+                style="@style/TextAppearance.Neon.Title"
+                android:layout_marginStart="12dp"/>
+        </LinearLayout>
+        
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="『 VISÍTANOS EN NUESTRA SEDE PRINCIPAL 』"
+            style="@style/TextAppearance.Neon.Subtitle"
+            android:layout_marginTop="4dp"/>
+            
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@drawable/bg_jojo_gradient_button"
+            android:layout_marginTop="8dp"/>
+            
+    </LinearLayout>
+
+    <!-- Map Container with rounded corners -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/mapCard"
+        style="@style/Widget.Neon.Card"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:layout_margin="16dp"
-        android:layout_gravity="bottom"
-        android:clickable="false"
-        android:padding="12dp"
-        android:layout_alignParentBottom="true">
+        app:cardCornerRadius="16dp"
+        app:strokeWidth="0dp"
+        app:layout_constraintTop_toBottomOf="@+id/headerContainer"
+        app:layout_constraintBottom_toTopOf="@+id/locationCard">
+        
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+            
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Location Details Panel (Bottom Sheet style) -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/locationCard"
+        style="@style/Widget.Neon.Card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="24dp"
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-            <TextView
-                android:id="@+id/tv_store_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Circuit Saint — Ubicación Oficial"
-                android:textStyle="bold"/>
-            <TextView
-                android:id="@+id/tv_store_address"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Bogotá D.C., Colombia"/>
-            <Button
-                android:id="@+id/btn_how_to_get"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Cómo llegar"/>
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnShareLocation"
+                style="@style/Widget.Neon.Button"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="ABRIR EN GOOGLE MAPS"
+                app:icon="@android:drawable/ic_menu_directions"
+                app:iconGravity="textStart"/>
 
         </LinearLayout>
-
     </com.google.android.material.card.MaterialCardView>
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

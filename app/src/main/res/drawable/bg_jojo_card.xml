@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Sombra suave (simulada con un shape gris translúcido desplazado) -->
+    <item android:top="2dp" android:left="2dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#20FF6B9D" />
+            <corners android:radius="12dp" />
+        </shape>
+    </item>
+    
+    <!-- Fondo Gradiente -->
+    <item android:bottom="2dp" android:right="2dp">
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="135"
+                android:startColor="#FFFFFF"
+                android:endColor="#FFF0F5"
+                android:type="linear" />
+            <corners android:radius="12dp" />
+            <stroke
+                android:width="2dp"
+                android:color="#80FF6B9D" /> <!-- primary/50 -->
+        </shape>
+    </item>
+</layer-list>

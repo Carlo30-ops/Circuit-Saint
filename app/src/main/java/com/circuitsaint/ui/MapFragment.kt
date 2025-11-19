@@ -39,15 +39,15 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         PerformanceOptimizer.configureMapForLowMemory(requireContext())
 
         val mapFragment = childFragmentManager
-            .findFragmentById(binding.mapContainer.id) as? SupportMapFragment
+            .findFragmentById(binding.map.id) as? SupportMapFragment
             ?: SupportMapFragment.newInstance().also {
                 childFragmentManager.beginTransaction()
-                    .replace(binding.mapContainer.id, it)
+                    .replace(binding.map.id, it)
                     .commitNowAllowingStateLoss()
             }
         mapFragment.getMapAsync(this)
 
-        binding.btnHowToGet.setOnClickListener {
+        binding.btnShareLocation.setOnClickListener {
             // Open navigation via geo intent
             val gmmIntentUri = android.net.Uri.parse("google.navigation:q=${storeLocation.latitude},${storeLocation.longitude}")
             val mapIntent = android.content.Intent(android.content.Intent.ACTION_VIEW, gmmIntentUri)

@@ -49,9 +49,17 @@ class FormActivity : AppCompatActivity() {
                     .setTitle("Enviar")
                     .setMessage("Enviar formulario con los datos ingresados?")
                     .setPositiveButton("Enviar") { _, _ ->
-                        Toast.makeText(this, "Formulario enviado. Gracias.", Toast.LENGTH_LONG).show()
-                        // store into viewmodel temporary store (for demo)
-                        viewModel.submitForm(binding.etName.text.toString(), binding.etEmail.text.toString(), binding.etMessage.text.toString())
+                        val nombre = binding.etName.text.toString()
+                        val email = binding.etEmail.text.toString()
+                        val mensaje = binding.etMessage.text.toString()
+                        val telefono = try {
+                            binding.etPhone.text?.toString()?.takeIf { it.isNotEmpty() }
+                        } catch (e: Exception) {
+                            null
+                        }
+                        
+                        viewModel.submitForm(nombre, email, mensaje, telefono)
+                        Toast.makeText(this, "Formulario enviado. Gracias por contactarnos.", Toast.LENGTH_LONG).show()
                         clearForm()
                     }
                     .setNegativeButton("Cancelar", null)
@@ -61,21 +69,30 @@ class FormActivity : AppCompatActivity() {
     }
 
     private fun validate(): Boolean {
+        var isValid = true
         if (TextUtils.isEmpty(binding.etName.text)) {
             binding.etName.error = "Nombre obligatorio"
-            return false
+            isValid = false
         }
         if (TextUtils.isEmpty(binding.etEmail.text) || !android.util.Patterns.EMAIL_ADDRESS.matcher(binding.etEmail.text).matches()) {
             binding.etEmail.error = "Email válido obligatorio"
-            return false
+            isValid = false
         }
-        return true
+        if (TextUtils.isEmpty(binding.etMessage.text) || binding.etMessage.text.toString().trim().length < 10) {
+            binding.etMessage.error = "Mensaje mínimo 10 caracteres"
+            isValid = false
+        }
+        return isValid
     }
 
     private fun clearForm() {
         binding.etName.text?.clear()
         binding.etEmail.text?.clear()
         binding.etMessage.text?.clear()
+        // Limpiar errores
+        binding.etName.error = null
+        binding.etEmail.error = null
+        binding.etMessage.error = null
     }
 
     override fun onSupportNavigateUp(): Boolean {

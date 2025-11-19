@@ -91,26 +91,65 @@ class CartActivity : AppCompatActivity() {
     private fun finalizePurchase() {
         val totalPrice = viewModel.totalPrice.value ?: 0.0
         if (totalPrice > 0) {
-            viewModel.checkout()
-            viewModel.checkoutState.observe(this) { success ->
-                if (success) {
-                    Toast.makeText(
-                        this,
-                        getString(R.string.total_purchase_format, totalPrice),
-                        Toast.LENGTH_LONG
-                    ).show()
-                    finish()
-                } else {
-                    Toast.makeText(
-                        this,
-                        "Error: No hay suficiente stock para algunos productos",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            }
+            // Mostrar diálogo para datos del cliente
+            showCheckoutDialog()
         } else {
             Toast.makeText(this, "El carrito está vacío", Toast.LENGTH_SHORT).show()
         }
+    }
+    
+    private fun showCheckoutDialog() {
+        val dialogView = layoutInflater.inflate(android.R.layout.simple_list_item_2, null)
+        val input = android.widget.EditText(this)
+        input.hint = "Nombre completo"
+        val inputEmail = android.widget.EditText(this)
+        inputEmail.hint = "Email"
+        inputEmail.inputType = android.text.InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+        val inputPhone = android.widget.EditText(this)
+        inputPhone.hint = "Teléfono (opcional)"
+        inputPhone.inputType = android.text.InputType.TYPE_CLASS_PHONE
+        
+        val container = android.widget.LinearLayout(this).apply {
+            orientation = android.widget.LinearLayout.VERTICAL
+            setPadding(50, 40, 50, 10)
+            addView(input)
+            addView(inputEmail)
+            addView(inputPhone)
+        }
+        
+        androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle("Datos del Cliente")
+            .setView(container)
+            .setPositiveButton("Confirmar Compra") { _, _ ->
+                val nombre = input.text.toString().trim()
+                val email = inputEmail.text.toString().trim()
+                val telefono = inputPhone.text.toString().trim().takeIf { it.isNotEmpty() }
+                
+                if (nombre.isEmpty() || email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    Toast.makeText(this, "Por favor ingresa nombre y email válidos", Toast.LENGTH_SHORT).show()
+                    return@setPositiveButton
+                }
+                
+                viewModel.checkout(nombre, email, telefono)
+                viewModel.checkoutState.observe(this) { order ->
+                    if (order != null) {
+                        Toast.makeText(
+                            this,
+                            "¡Compra exitosa! Pedido: ${order.numero_pedido}\nTotal: $${String.format("%.2f", order.total)}",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        finish()
+                    } else {
+                        Toast.makeText(
+                            this,
+                            "Error: No hay suficiente stock para algunos productos",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

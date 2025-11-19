@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- JoJo Mobile First Spacing -->
+    <dimen name="jojo_spacing_xs">4dp</dimen>
+    <dimen name="jojo_spacing_sm">8dp</dimen>
+    <dimen name="jojo_spacing_md">16dp</dimen>
+    <dimen name="jojo_spacing_lg">24dp</dimen>
+    <dimen name="jojo_spacing_xl">32dp</dimen>
+    
+    <dimen name="jojo_touch_target">48dp</dimen>
+    <dimen name="jojo_card_elevation">8dp</dimen>
+    <dimen name="jojo_card_corner">4dp</dimen>
+    <dimen name="jojo_card_stroke">2dp</dimen>
+    
+    <dimen name="jojo_text_title">24sp</dimen>
+    <dimen name="jojo_text_headline">48sp</dimen>
+    <dimen name="jojo_text_body">16sp</dimen>
+</resources>
