@@ -284,6 +284,7 @@ Este proyecto es parte del trabajo académico "Construcción de una Tienda Virtu
 ## 👤 Autor
 
 **Andrés Ernesto Díaz Ortega**
+
 **Carlos José Betts Gómez**
 - Fecha de Elaboración: 14/03/2025
 - Versión: 01
