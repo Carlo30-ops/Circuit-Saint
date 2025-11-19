@@ -299,4 +299,4 @@ Este proyecto es parte del trabajo académico "Construcción de una Tienda Virtu
 ---
 
 **Versión**: 1.0  
-**Última Actualización**: 14/03/2025
+**Última Actualización**: 19/03/2025
