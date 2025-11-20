@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import com.circuitsaint.databinding.FragmentMapBinding
+import com.circuitsaint.util.Config
 import com.circuitsaint.util.PerformanceOptimizer
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -16,15 +17,14 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MapFragment : Fragment(), OnMapReadyCallback {
     private var _binding: FragmentMapBinding? = null
     private val binding get() = _binding!!
 
     private var map: GoogleMap? = null
-
-    // Fixed location (Bogotá example)
-    private val storeLocation = LatLng(4.624335, -74.063644)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,6 +49,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         binding.btnShareLocation.setOnClickListener {
             // Open navigation via geo intent
+            val storeLocation = Config.STORE_LOCATION
             val gmmIntentUri = android.net.Uri.parse("google.navigation:q=${storeLocation.latitude},${storeLocation.longitude}")
             val mapIntent = android.content.Intent(android.content.Intent.ACTION_VIEW, gmmIntentUri)
             mapIntent.setPackage("com.google.android.apps.maps")
@@ -69,7 +70,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         map?.uiSettings?.isMapToolbarEnabled = false
 
         // Add marker and animate camera
-        map?.addMarker(MarkerOptions().position(storeLocation).title("Circuit Saint — Ubicación Oficial"))
+        val storeLocation = Config.STORE_LOCATION
+        map?.addMarker(MarkerOptions().position(storeLocation).title(Config.STORE_NAME))
         map?.animateCamera(CameraUpdateFactory.newLatLngZoom(storeLocation, 15f))
 
         // Location permission optional: only enable if user granted

@@ -7,15 +7,20 @@ import android.text.TextUtils
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.activity.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.circuitsaint.databinding.ActivityFormBinding
+import com.circuitsaint.domain.Result
+import com.circuitsaint.util.isValidEmail
+import com.circuitsaint.util.isValidName
 import com.circuitsaint.viewmodel.StoreViewModel
-import com.circuitsaint.viewmodel.StoreViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import timber.log.Timber
 
+@AndroidEntryPoint
 class FormActivity : AppCompatActivity() {
     private lateinit var binding: ActivityFormBinding
-    private val viewModel: StoreViewModel by viewModels {
-        StoreViewModelFactory(application)
-    }
+    private val viewModel: StoreViewModel by viewModels()
 
     companion object {
         const val EXTRA_QR_DATA = "extra_qr_data"
@@ -59,8 +64,35 @@ class FormActivity : AppCompatActivity() {
                         }
                         
                         viewModel.submitForm(nombre, email, mensaje, telefono)
-                        Toast.makeText(this, "Formulario enviado. Gracias por contactarnos.", Toast.LENGTH_LONG).show()
-                        clearForm()
+                        lifecycleScope.launch {
+                            viewModel.formSubmissionState.collect { result ->
+                                when (result) {
+                                    is Result.Success -> {
+                                        Toast.makeText(
+                                            this@FormActivity,
+                                            "Formulario enviado. Gracias por contactarnos.",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                        viewModel.clearFormSubmissionState()
+                                        clearForm()
+                                    }
+                                    is Result.Error -> {
+                                        Toast.makeText(
+                                            this@FormActivity,
+                                            result.message ?: "Error al enviar el formulario",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                        viewModel.clearFormSubmissionState()
+                                    }
+                                    is Result.Loading -> {
+                                        // Mostrar loading si es necesario
+                                    }
+                                    null -> {
+                                        // Estado inicial
+                                    }
+                                }
+                            }
+                        }
                     }
                     .setNegativeButton("Cancelar", null)
                     .show()
@@ -70,18 +102,31 @@ class FormActivity : AppCompatActivity() {
 
     private fun validate(): Boolean {
         var isValid = true
-        if (TextUtils.isEmpty(binding.etName.text)) {
-            binding.etName.error = "Nombre obligatorio"
+        val nombre = binding.etName.text.toString()
+        val email = binding.etEmail.text.toString()
+        val mensaje = binding.etMessage.text.toString()
+        
+        if (!nombre.isValidName()) {
+            binding.etName.error = "Nombre debe tener entre 2 y 100 caracteres"
             isValid = false
+        } else {
+            binding.etName.error = null
         }
-        if (TextUtils.isEmpty(binding.etEmail.text) || !android.util.Patterns.EMAIL_ADDRESS.matcher(binding.etEmail.text).matches()) {
+        
+        if (email.isEmpty() || !email.isValidEmail()) {
             binding.etEmail.error = "Email válido obligatorio"
             isValid = false
+        } else {
+            binding.etEmail.error = null
         }
-        if (TextUtils.isEmpty(binding.etMessage.text) || binding.etMessage.text.toString().trim().length < 10) {
+        
+        if (mensaje.trim().length < 10) {
             binding.etMessage.error = "Mensaje mínimo 10 caracteres"
             isValid = false
+        } else {
+            binding.etMessage.error = null
         }
+        
         return isValid
     }
 

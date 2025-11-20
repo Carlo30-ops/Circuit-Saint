@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.circuitsaint.ui.HomeFragment"
+        android:label="Productos"
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_home_to_productDetail"
+            app:destination="@id/productDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/productDetailFragment"
+        android:name="com.circuitsaint.ui.ProductDetailFragment"
+        android:label="Detalle del Producto">
+        <argument
+            android:name="productId"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_productDetail_to_cart"
+            app:destination="@id/cartFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/cartFragment"
+        android:name="com.circuitsaint.ui.CartFragment"
+        android:label="Carrito">
+        <action
+            android:id="@+id/action_cart_to_home"
+            app:destination="@id/homeFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="com.circuitsaint.ui.MapFragment"
+        android:label="Ubicación"
+        tools:layout="@layout/fragment_map" />
+
+    <fragment
+        android:id="@+id/qrScannerFragment"
+        android:name="com.circuitsaint.ui.QrScannerFragment"
+        android:label="Escáner QR"
+        tools:layout="@layout/fragment_qr_scanner">
+        <action
+            android:id="@+id/action_qrScanner_to_contact"
+            app:destination="@id/contactFormFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/contactFormFragment"
+        android:name="com.circuitsaint.ui.ContactFormFragment"
+        android:label="Contacto" />
+
+</navigation>

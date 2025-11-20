@@ -36,7 +36,7 @@ app/
 - **Coroutines**: Programación asíncrona
 - **ViewBinding**: Binding de vistas
 - **Google Maps**: Visualización de ubicación
-- **ZXing**: Escáner de códigos QR
+- **CameraX + ML Kit**: Escáner de códigos QR
 - **Material Design**: Componentes UI modernos
 
 ## 📦 Dependencias Principales
@@ -51,7 +51,13 @@ implementation("com.google.android.gms:play-services-maps:18.2.0")
 implementation("com.google.android.gms:play-services-location:21.0.1")
 
 // QR Scanner
-implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+implementation("androidx.camera:camera-camera2:1.3.0")
+implementation("androidx.camera:camera-lifecycle:1.3.0")
+implementation("androidx.camera:camera-view:1.3.0")
+implementation("com.google.mlkit:barcode-scanning:17.2.0")
+
+// Glide
+implementation("com.github.bumptech.glide:glide:4.16.0")
 
 // Navigation
 implementation("androidx.navigation:navigation-fragment-ktx:2.7.6")
@@ -176,6 +182,10 @@ implementation("androidx.navigation:navigation-fragment-ktx:2.7.6")
 - Queries optimizadas con índices
 - Transacciones para operaciones complejas
 
+### Scripts externos
+
+- `database/mysql_seed.sql`: script oficial con los 6 productos base y las URLs originales de Unsplash para cuando la API REST/MySQL esté disponible.
+
 ## 🔐 Permisos Requeridos
 
 ```xml
@@ -240,7 +250,10 @@ Output: `app/build/outputs/bundle/release/app-release.aab`
 
 ## 📚 Documentación Adicional
 
-- **[GUIA_PUBLICACION.md](GUIA_PUBLICACION.md)**: Guía completa para publicar en Google Play Store y App Store
+- **[DOCUMENTACION_PROYECTO.md](DOCUMENTACION_PROYECTO.md)**: Documentación completa del proyecto académico
+- **[DIAGRAMA_ARQUITECTURA.md](DIAGRAMA_ARQUITECTURA.md)**: Diagramas detallados de arquitectura y flujos
+- **[CHANGELOG.md](CHANGELOG.md)**: Historial de cambios y mejoras
+- **[INFORME_ESTADO_PROYECTO.md](INFORME_ESTADO_PROYECTO.md)**: Estado actual y mejoras implementadas
 - **Código comentado**: Todas las clases principales tienen documentación
 
 ## 🧪 Testing
@@ -276,6 +289,13 @@ Output: `app/build/outputs/bundle/release/app-release.aab`
 ### Error: "Room Database"
 - Verificar que kapt está configurado
 - Limpiar y reconstruir proyecto: `./gradlew clean build`
+
+## 🖼️ Imágenes, logo y atribuciones
+
+- Las **imágenes de productos** reutilizan exactamente las mismas URLs que la PWA Circuit Saint (Unsplash). Se cargan dinámicamente con Glide (`placeholder_product.xml` se usa como fallback).
+- El **logo** “CIRCUIT SAINT” se renderiza con la fuente Anton y un gradiente dinámico (ver `MainActivity.kt` → `applyLogoGradient()`).
+- Los **iconos** del sistema provienen de Material Icons (`ic_store`, `ic_map_pin`, `ic_qr_code`, `ic_phone`, `ic_shopping_cart`, etc.) generados como Vector Assets.
+- Créditos: “Las imágenes de productos son proporcionadas por Unsplash – https://unsplash.com/license”.
 
 ## 📄 Licencia
 

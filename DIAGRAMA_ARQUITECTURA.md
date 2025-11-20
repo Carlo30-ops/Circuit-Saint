@@ -1,259 +1,371 @@
 # Diagrama de Arquitectura - Circuit Saint
 
-## Arquitectura MVVM
+## Arquitectura MVVM con Clean Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                        UI LAYER                              │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
-│  │  Activities  │  │   Fragments  │  │   Adapters   │      │
-│  │              │  │              │  │              │      │
-│  │ MainActivity │  │ HomeFragment │  │ProductoAdapter│      │
-│  │ProductDetail │  │  MapFragment │  │ CartAdapter  │      │
-│  │   Activity   │  │QrScannerFrag. │  │              │      │
-│  │ CartActivity │  │              │  │              │      │
-│  │ FormActivity │  │              │  │              │      │
-│  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘      │
-│         │                 │                 │               │
-│         └─────────────────┼─────────────────┘               │
-│                           │                                 │
-│                           ▼                                 │
-│                  ┌─────────────────┐                        │
-│                  │  ViewBinding    │                        │
-│                  │  (UI Binding)   │                        │
-│                  └─────────────────┘                        │
-└───────────────────────────┬─────────────────────────────────┘
-                            │
-                            │ Observa LiveData
-                            │
-┌───────────────────────────▼─────────────────────────────────┐
-│                    VIEWMODEL LAYER                          │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │              StoreViewModel                          │  │
-│  │  - allProducts: LiveData<List<Product>>             │  │
-│  │  - cartItems: LiveData<List<CartItemWithProduct>>    │  │
-│  │  - cartItemCount: LiveData<Int>                     │  │
-│  │  - totalPrice: LiveData<Double?>                      │  │
-│  │                                                       │  │
-│  │  Métodos:                                            │  │
-│  │  - insertProduct()                                   │  │
-│  │  - addToCart()                                       │  │
-│  │  - updateCartItemQuantity()                         │  │
-│  │  - removeFromCart()                                  │  │
-│  │  - clearCart()                                       │  │
-│  └───────────────────┬─────────────────────────────────┘  │
-└────────────────────────┼─────────────────────────────────────┘
-                         │
-                         │ Usa Coroutines
-                         │
-┌────────────────────────▼─────────────────────────────────────┐
-│                    REPOSITORY LAYER                           │
-│  ┌────────────────────────────────────────────────────────┐  │
-│  │              StoreRepository                           │  │
-│  │  - Abstrae acceso a datos                             │  │
-│  │  - Maneja lógica de negocio de datos                  │  │
-│  │  - Proporciona datos a ViewModel                      │  │
-│  └───────────────────┬──────────────────────────────────┘  │
-└────────────────────────┼─────────────────────────────────────┘
-                         │
-                         │ Accede a
-                         │
-┌────────────────────────▼─────────────────────────────────────┐
-│                      DATA LAYER                                │
-│  ┌──────────────────┐         ┌──────────────────┐        │
-│  │   Room Database   │         │   Data Models     │        │
-│  │                   │         │                   │        │
-│  │  AppDatabase      │         │  Product          │        │
-│  │  ├─ ProductDao    │         │  CartItem         │        │
-│  │  └─ CartDao       │         │  StoreLocation    │        │
-│  │                   │         │  CartItemWithProd │        │
-│  └──────────────────┘         └──────────────────┘        │
-└──────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              PRESENTATION LAYER                              │
+│                                                                               │
+│  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐                  │
+│  │MainActivity  │    │HomeFragment  │    │ProductDetail │                  │
+│  │              │    │              │    │  Activity    │                  │
+│  │- Navigation  │    │- RecyclerView│    │- Product Info│                  │
+│  │- BottomNav   │    │- Paging3     │    │- Add to Cart │                  │
+│  └──────┬───────┘    └──────┬───────┘    └──────┬───────┘                  │
+│         │                    │                    │                          │
+│  ┌──────▼───────┐    ┌──────▼───────┐    ┌──────▼───────┐                  │
+│  │CartActivity  │    │MapFragment   │    │QrScannerFrag │                  │
+│  │              │    │              │    │              │                  │
+│  │- Cart Items  │    │- Google Maps │    │- QR Scanner  │                  │
+│  │- Checkout    │    │- Location    │    │- Permissions │                  │
+│  └──────────────┘    └──────────────┘    └──────────────┘                  │
+│                                                                               │
+│  ┌──────────────────────────────────────────────────────────────────────┐   │
+│  │                        ViewBinding                                    │   │
+│  │  - activity_main.xml                                                 │   │
+│  │  - fragment_home.xml                                                 │   │
+│  │  - activity_product_detail.xml                                       │   │
+│  │  - activity_cart.xml                                                  │   │
+│  └──────────────────────────────────────────────────────────────────────┘   │
+└───────────────────────────────────┬─────────────────────────────────────────┘
+                                    │ Observa (LiveData/StateFlow)
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                            VIEWMODEL LAYER                                   │
+│                                                                               │
+│  ┌──────────────────────────────────────────────────────────────────────┐   │
+│  │                        StoreViewModel                                 │   │
+│  │  ┌────────────────────────────────────────────────────────────────┐  │   │
+│  │  │  Products:                                                     │  │   │
+│  │  │  - getProductsPaginated(): Flow<PagingData<Product>>          │  │   │
+│  │  │  - searchProducts(query: String)                              │  │   │
+│  │  │  - getProductById(id: Long): LiveData<Product?>               │  │   │
+│  │  └────────────────────────────────────────────────────────────────┘  │   │
+│  │  ┌────────────────────────────────────────────────────────────────┐  │   │
+│  │  │  Cart:                                                         │  │   │
+│  │  │  - cartItems: LiveData<List<CartItemWithProduct>>             │  │   │
+│  │  │  - totalPrice: LiveData<Double?>                               │  │   │
+│  │  │  - addToCart(productId, quantity)                             │  │   │
+│  │  │  - updateCartItemQuantity(id, quantity)                        │  │   │
+│  │  │  - removeCartItem(id)                                          │  │   │
+│  │  └────────────────────────────────────────────────────────────────┘  │   │
+│  │  ┌────────────────────────────────────────────────────────────────┐  │   │
+│  │  │  Checkout:                                                     │  │   │
+│  │  │  - checkoutState: StateFlow<Result<Order>?>                    │  │   │
+│  │  │  - checkout(nombre, email, telefono)                           │  │   │
+│  │  └────────────────────────────────────────────────────────────────┘  │   │
+│  └──────────────────────────────────────────────────────────────────────┘   │
+└───────────────────────────────────┬─────────────────────────────────────────┘
+                                    │ Usa
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              DOMAIN LAYER                                     │
+│                                                                               │
+│  ┌──────────────────────┐    ┌──────────────────────┐                      │
+│  │GetProductsPaginated  │    │CheckoutUseCase       │                      │
+│  │UseCase               │    │                      │                      │
+│  │                      │    │- Validates data       │                      │
+│  │- Encapsulates        │    │- Calls repository    │                      │
+│  │  business logic      │    │- Returns Result<T>   │                      │
+│  └──────────────────────┘    └──────────────────────┘                      │
+│                                                                               │
+│  ┌──────────────────────┐    ┌──────────────────────┐                      │
+│  │AddToCartUseCase      │    │SearchProductsUseCase │                      │
+│  │                      │    │                      │                      │
+│  │- Validates quantity  │    │- Encapsulates search │                      │
+│  │- Checks stock        │    │  logic              │                      │
+│  │- Returns Result      │    │- Returns paginated   │                      │
+│  └──────────────────────┘    └──────────────────────┘                      │
+│                                                                               │
+│  ┌──────────────────────────────────────────────────────────────────────┐   │
+│  │                        Result<T> (Sealed Class)                       │   │
+│  │  - Success<T>(val data: T)                                            │   │
+│  │  - Error(val exception: Throwable, val message: String?)              │   │
+│  │  - Loading                                                             │   │
+│  └──────────────────────────────────────────────────────────────────────┘   │
+└───────────────────────────────────┬─────────────────────────────────────────┘
+                                    │ Usa
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                               DATA LAYER                                      │
+│                                                                               │
+│  ┌──────────────────────────────────────────────────────────────────────┐   │
+│  │                        StoreRepository                               │   │
+│  │  ┌────────────────────────────────────────────────────────────────┐  │   │
+│  │  │  Products:                                                     │  │   │
+│  │  │  - getProductsPaginated(): Flow<PagingData<Product>>          │  │   │
+│  │  │  - searchProductsPaginated(query): Flow<PagingData<Product>>  │  │   │
+│  │  │  - getProductById(id): LiveData<Product?>                     │  │   │
+│  │  └────────────────────────────────────────────────────────────────┘  │   │
+│  │  ┌────────────────────────────────────────────────────────────────┐  │   │
+│  │  │  Cart:                                                         │  │   │
+│  │  │  - getCartItemsWithProducts(): LiveData<List<CartItemWith...>> │  │   │
+│  │  │  - addToCart(productId, quantity)                              │  │   │
+│  │  │  - updateCartItemQuantity(id, quantity)                        │  │   │
+│  │  │  - removeCartItem(id)                                          │  │   │
+│  │  │  - clearCart()                                                  │  │   │
+│  │  └────────────────────────────────────────────────────────────────┘  │   │
+│  │  ┌────────────────────────────────────────────────────────────────┐  │   │
+│  │  │  Checkout (Atomic Transaction):                                │  │   │
+│  │  │  - checkout(nombre, email, telefono): Order?                   │  │   │
+│  │  │    • Validates stock with conditional UPDATE                   │  │   │
+│  │  │    • Creates order atomically                                  │  │   │
+│  │  │    • Updates stock                                             │  │   │
+│  │  │    • Clears cart                                               │  │   │
+│  │  └────────────────────────────────────────────────────────────────┘  │   │
+│  └───────────────────────────────────┬────────────────────────────────────┘   │
+│                                      │                                        │
+│  ┌───────────────────────────────────▼────────────────────────────────────┐   │
+│  │                    Room Database (SQLite)                              │   │
+│  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐                 │   │
+│  │  │ ProductDao  │  │  CartDao     │  │  OrderDao    │                 │   │
+│  │  │             │  │              │  │              │                 │   │
+│  │  │- getAll     │  │- getCart     │  │- insertOrder │                 │   │
+│  │  │  Products   │  │  Items      │  │- getOrders   │                 │   │
+│  │  │  Paged()    │  │- addToCart  │  │- update      │                 │   │
+│  │  │- search     │  │- update     │  │  Estado      │                 │   │
+│  │  │  Products() │  │  Quantity   │  │              │                 │   │
+│  │  │- getById()  │  │- remove()   │  │              │                 │   │
+│  │  │- update     │  │- clear()    │  │              │                 │   │
+│  │  │  Stock()    │  │              │  │              │                 │   │
+│  │  └──────────────┘  └──────────────┘  └──────────────┘                 │   │
+│  │                                                                         │   │
+│  │  ┌─────────────────────────────────────────────────────────────────┐   │   │
+│  │  │  Entities:                                                      │   │   │
+│  │  │  - Product                                                       │   │   │
+│  │  │  - CartItem                                                      │   │   │
+│  │  │  - Order                                                         │   │   │
+│  │  │  - OrderItem                                                     │   │   │
+│  │  │  - Contact                                                       │   │   │
+│  │  └─────────────────────────────────────────────────────────────────┘   │   │
+│  └─────────────────────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                      DEPENDENCY INJECTION (Hilt)                            │
+│                                                                               │
+│  ┌──────────────────────┐    ┌──────────────────────┐                      │
+│  │  DatabaseModule      │    │RepositoryModule      │                      │
+│  │                      │    │                      │                      │
+│  │  @Provides           │    │  @Provides           │                      │
+│  │  @Singleton          │    │  @Singleton          │                      │
+│  │  - AppDatabase       │    │  - StoreRepository   │                      │
+│  │  - ProductDao        │    │                      │                      │
+│  │  - CartDao           │    │                      │                      │
+│  │  - OrderDao          │    │                      │                      │
+│  └──────────────────────┘    └──────────────────────┘                      │
+│                                                                               │
+│  ┌──────────────────────┐    ┌──────────────────────┐                      │
+│  │  WorkerModule        │    │  UseCase Modules     │                      │
+│  │                      │    │  (Auto-generated)    │                      │
+│  │  @Provides           │    │                      │                      │
+│  │  - HiltWorkerFactory │    │  - GetProducts...    │                      │
+│  │                      │    │  - CheckoutUseCase   │                      │
+│  │                      │    │  - AddToCartUseCase  │                      │
+│  └──────────────────────┘    └──────────────────────┘                      │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         BACKGROUND SERVICES                                 │
+│                                                                               │
+│  ┌──────────────────────────────────────────────────────────────────────┐   │
+│  │                    WorkManager + Hilt                                │   │
+│  │  ┌────────────────────────────────────────────────────────────────┐  │   │
+│  │  │  DatabaseSeederWorker                                           │  │   │
+│  │  │  - Seeds database with initial products                         │  │   │
+│  │  │  - Runs in background                                          │  │   │
+│  │  │  - Uses Hilt for dependency injection                          │  │   │
+│  │  └────────────────────────────────────────────────────────────────┘  │   │
+│  └──────────────────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         EXTERNAL SERVICES                                   │
+│                                                                               │
+│  ┌──────────────────────┐    ┌──────────────────────┐                      │
+│  │  Google Maps API     │    │  ZXing QR Scanner    │                      │
+│  │                      │    │                      │                      │
+│  │  - MapFragment       │    │  - QrScannerFragment │                      │
+│  │  - Location display  │    │  - QR code reading   │                      │
+│  │  - Marker placement  │    │  - Permission handle │                      │
+│  └──────────────────────┘    └──────────────────────┘                      │
+│                                                                               │
+│  ┌──────────────────────┐    ┌──────────────────────┐                      │
+│  │  Glide               │    │  Timber (Logging)     │                      │
+│  │                      │    │                      │                      │
+│  │  - Image loading     │    │  - Debug logging     │                      │
+│  │  - Image caching     │    │  - Error tracking    │                      │
+│  │  - Memory efficient  │    │  - Performance logs  │                      │
+│  └──────────────────────┘    └──────────────────────┘                      │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-## Flujo de Datos
-
-### 1. Cargar Productos
+## Flujo de Datos: Checkout Process
 
 ```
-User Action (HomeFragment)
-    │
-    ▼
-StoreViewModel.getAllProducts()
-    │
-    ▼
-StoreRepository.getAllProducts()
-    │
-    ▼
-ProductDao.getAllProducts() → LiveData<List<Product>>
-    │
-    ▼
-Room Database Query
-    │
-    ▼
-LiveData actualiza UI automáticamente
+User clicks "Finalizar Compra"
+         │
+         ▼
+┌────────────────────┐
+│  CartActivity      │
+│  - Shows dialog    │
+│  - Collects data  │
+└─────────┬──────────┘
+          │
+          ▼
+┌────────────────────┐
+│  StoreViewModel    │
+│  - checkout()      │
+│  - Sets Loading    │
+└─────────┬──────────┘
+          │
+          ▼
+┌────────────────────┐
+│  CheckoutUseCase   │
+│  - Validates data  │
+│  - Calls repo      │
+└─────────┬──────────┘
+          │
+          ▼
+┌────────────────────┐
+│  StoreRepository   │
+│  - checkout()      │
+│  - withTransaction │
+└─────────┬──────────┘
+          │
+          ▼
+┌─────────────────────────────────────────┐
+│  Room Database (Atomic Transaction)     │
+│  1. Validate stock (conditional UPDATE) │
+│  2. Create Order                        │
+│  3. Create OrderItems                   │
+│  4. Update product stock                │
+│  5. Clear cart                          │
+└─────────┬───────────────────────────────┘
+          │
+          ▼
+┌────────────────────┐
+│  Returns Order     │
+│  (or null if fail) │
+└─────────┬──────────┘
+          │
+          ▼
+┌────────────────────┐
+│  CheckoutUseCase   │
+│  - Wraps in Result │
+└─────────┬──────────┘
+          │
+          ▼
+┌────────────────────┐
+│  StoreViewModel    │
+│  - Updates state   │
+│  - Result.Success  │
+└─────────┬──────────┘
+          │
+          ▼
+┌────────────────────┐
+│  CartActivity      │
+│  - Shows success   │
+│  - Closes activity │
+└────────────────────┘
 ```
 
-### 2. Agregar al Carrito
+## Flujo de Datos: Product List
 
 ```
-User Action (ProductDetailActivity)
-    │
-    ▼
-StoreViewModel.addToCart(productId, quantity)
-    │
-    ▼
-Coroutine Scope (viewModelScope)
-    │
-    ▼
-StoreRepository.addToCart()
-    │
-    ├─ Verifica si existe en carrito
-    ├─ Si existe: actualiza cantidad
-    └─ Si no existe: inserta nuevo
-    │
-    ▼
-CartDao.insertCartItem() / updateCartItem()
-    │
-    ▼
-Room Database Transaction
-    │
-    ▼
-LiveData se actualiza automáticamente
-    │
-    ▼
-UI se actualiza (CartActivity, HomeFragment)
+HomeFragment created
+         │
+         ▼
+┌────────────────────┐
+│  HomeFragment      │
+│  - setupRecycler   │
+│  - observeViewModel│
+└─────────┬──────────┘
+          │
+          ▼
+┌────────────────────┐
+│  StoreViewModel    │
+│  - getProducts     │
+│    Paginated()     │
+└─────────┬──────────┘
+          │
+          ▼
+┌────────────────────┐
+│  GetProducts       │
+│  PaginatedUseCase  │
+└─────────┬──────────┘
+          │
+          ▼
+┌────────────────────┐
+│  StoreRepository   │
+│  - getProducts     │
+│    Paginated()     │
+└─────────┬──────────┘
+          │
+          ▼
+┌────────────────────┐
+│  Pager (Paging3)   │
+│  - Creates Pager   │
+│  - Returns Flow    │
+└─────────┬──────────┘
+          │
+          ▼
+┌────────────────────┐
+│  ProductDao        │
+│  - getAllProducts  │
+│    Paged()         │
+│  - Returns         │
+│    PagingSource    │
+└─────────┬──────────┘
+          │
+          ▼
+┌────────────────────┐
+│  Room Database     │
+│  - Queries products│
+│  - Returns page    │
+└─────────┬──────────┘
+          │
+          ▼
+┌────────────────────┐
+│  Flow<PagingData>  │
+│  - Emits pages     │
+│  - Auto-loads more │
+└─────────┬──────────┘
+          │
+          ▼
+┌────────────────────┐
+│  ProductoAdapter   │
+│  - submitData()    │
+│  - Updates UI      │
+└────────────────────┘
 ```
 
-## Componentes Principales
+## Componentes y Responsabilidades
 
-### UI Components
+### Presentation Layer
+- **Activities/Fragments:** Manejan UI y eventos del usuario
+- **Adapters:** Conectan datos con RecyclerView
+- **ViewBinding:** Acceso seguro a vistas
 
-```
-MainActivity
-├── BottomNavigationView
-│   ├── Home (HomeFragment)
-│   ├── Map (MapFragment)
-│   ├── QR Scanner (QrScannerFragment)
-│   └── Cart (CartActivity)
-│
-HomeFragment
-├── RecyclerView
-│   └── ProductoAdapter
-│       └── ProductViewHolder
-└── Observa: StoreViewModel.allProducts
+### ViewModel Layer
+- **StoreViewModel:** Expone datos y estados para UI
+- **LiveData/StateFlow:** Observables reactivos
+- **viewModelScope:** Manejo de coroutines
 
-ProductDetailActivity
-├── Muestra detalles del producto
-├── Selector de cantidad
-└── Botón "Agregar al Carrito"
+### Domain Layer
+- **UseCases:** Encapsulan lógica de negocio
+- **Result<T>:** Manejo explícito de estados
+- **Validaciones:** Reglas de negocio
 
-CartActivity
-├── RecyclerView
-│   └── CartAdapter
-│       └── CartViewHolder
-├── Total del carrito
-└── Botón "Finalizar Compra"
+### Data Layer
+- **Repository:** Única fuente de verdad
+- **DAOs:** Acceso a base de datos
+- **Entities:** Modelos de datos
+- **Transacciones:** Operaciones atómicas
 
-MapFragment
-├── Google Maps
-├── Marcador de tienda
-└── Información de contacto
-
-QrScannerFragment
-├── Cámara (ZXing)
-├── Detección de QR
-└── Navegación a FormActivity
-
-FormActivity
-├── Formulario de contacto
-└── Validación de campos
-```
-
-### Data Flow
-
-```
-┌─────────────┐
-│   Product   │
-│  (Entity)   │
-└──────┬──────┘
-       │
-       │ @Entity
-       ▼
-┌─────────────┐
-│ ProductDao  │
-│  (DAO)      │
-└──────┬──────┘
-       │
-       │ Queries
-       ▼
-┌─────────────┐
-│ AppDatabase │
-│  (Room)     │
-└─────────────┘
-```
-
-## Optimizaciones Implementadas
-
-### Batería
-- Lifecycle-aware components
-- Liberación de recursos en onPause()
-- Detección de batería baja
-- Uso eficiente de WakeLocks
-
-### Memoria
-- ViewBinding (previene leaks)
-- Limpieza automática de recursos
-- Optimización de imágenes
-- ProGuard/R8 minificación
-
-### Rendimiento
-- Coroutines para operaciones asíncronas
-- LiveData para actualizaciones reactivas
-- Índices en base de datos
-- Lazy loading en RecyclerView
-
-## Dependencias entre Capas
-
-```
-UI Layer
-    │ depende de
-    ▼
-ViewModel Layer
-    │ depende de
-    ▼
-Repository Layer
-    │ depende de
-    ▼
-Data Layer (Room)
-```
-
-**Regla**: Las capas superiores solo conocen las inferiores, nunca al revés.
-
-## Comunicación entre Componentes
-
-### ViewModel ↔ Repository
-- Llamadas directas a métodos del repositorio
-- Uso de coroutines para operaciones asíncronas
-
-### Repository ↔ Database
-- Acceso a DAOs
-- Transacciones cuando sea necesario
-
-### View ↔ ViewModel
-- Observación de LiveData
-- Llamadas a métodos del ViewModel
-
-## Patrones Utilizados
-
-1. **Repository Pattern**: Abstracción de fuente de datos
-2. **Observer Pattern**: LiveData observables
-3. **Singleton Pattern**: AppDatabase, PerformanceOptimizer
-4. **Factory Pattern**: StoreViewModelFactory
-5. **Adapter Pattern**: RecyclerView Adapters
-
----
-
-**Versión**: 1.0  
-**Fecha**: 14/03/2025
-
+### Infrastructure
+- **Hilt:** Inyección de dependencias
+- **WorkManager:** Tareas en background
+- **Room:** Base de datos local
+- **Paging3:** Paginación eficiente

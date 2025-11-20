@@ -11,17 +11,17 @@ import androidx.lifecycle.Observer
 import com.circuitsaint.R
 import com.circuitsaint.databinding.ActivityProductDetailBinding
 import com.circuitsaint.viewmodel.StoreViewModel
-import com.circuitsaint.viewmodel.StoreViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ProductDetailActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityProductDetailBinding
-    private val viewModel: StoreViewModel by viewModels {
-        StoreViewModelFactory(application)
-    }
+    private val viewModel: StoreViewModel by viewModels()
 
     private var productId: Long = -1
     private var currentQuantity: Int = 1
+    private var currentProduct: com.circuitsaint.data.model.Product? = null
 
     companion object {
         private const val EXTRA_PRODUCT_ID = "extra_product_id"
@@ -53,8 +53,8 @@ class ProductDetailActivity : AppCompatActivity() {
 
     private fun setupViews() {
         binding.btnIncrease.setOnClickListener {
-            val product = viewModel.getProductById(productId).value
-            val maxStock = product?.stock ?: 0
+            // Usar la variable local en lugar de acceder a LiveData.value
+            val maxStock = currentProduct?.stock ?: 0
             if (currentQuantity < maxStock) {
                 currentQuantity++
                 updateQuantityDisplay()
@@ -66,8 +66,9 @@ class ProductDetailActivity : AppCompatActivity() {
             if (currentQuantity > 1) {
                 currentQuantity--
                 updateQuantityDisplay()
-                val product = viewModel.getProductById(productId).value
-                updateButtonsState(product?.stock ?: 0)
+                // Usar la variable local en lugar de acceder a LiveData.value
+                val maxStock = currentProduct?.stock ?: 0
+                updateButtonsState(maxStock)
             }
         }
 
@@ -84,6 +85,9 @@ class ProductDetailActivity : AppCompatActivity() {
     private fun observeViewModel() {
         viewModel.getProductById(productId).observe(this, Observer { product ->
             product?.let {
+                // Guardar referencia al producto actual para uso en los botones
+                currentProduct = it
+                
                 binding.productName.text = it.name
                 binding.productDescription.text = it.description
                 binding.productPrice.text = getString(R.string.price_format, it.price)

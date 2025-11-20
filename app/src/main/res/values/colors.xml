@@ -1,33 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Paleta JoJo's / Circuit Saint Dark Mode -->
-    <color name="jojo_primary">#FF6B9D</color>   <!-- Neon Pink -->
-    <color name="jojo_secondary">#8B5CF6</color> <!-- Neon Purple -->
-    <color name="jojo_accent">#FBBF24</color>    <!-- Neon Gold -->
+    <!-- Colores principales según instructivo -->
+    <color name="primary">#FF6B9D</color>
+    <color name="primary_foreground">#FFFFFF</color>
+    <color name="primary_variant">#FF4D7F</color>
     
-    <color name="jojo_background">#0D0B14</color> <!-- Deep Dark Background -->
-    <color name="jojo_surface">#181825</color>    <!-- Card Background -->
-    <color name="jojo_surface_light">#252535</color>
+    <color name="secondary">#8B5CF6</color>
+    <color name="secondary_foreground">#FFFFFF</color>
+    <color name="secondary_variant">#7C3AED</color>
     
-    <color name="jojo_text_primary">#FFFFFF</color>
-    <color name="jojo_text_secondary">#9CA3AF</color>
-    <color name="jojo_text_highlight">#60A5FA</color> <!-- Light Blue for links/info -->
-
-    <!-- Mappings -->
-    <color name="jojo_purple">@color/jojo_secondary</color>
-    <color name="md_theme_light_error">#EF4444</color>
+    <color name="accent">#FBBF24</color>
+    <color name="accent_foreground">#0D1117</color>
+    <color name="accent_variant">#F59E0B</color>
     
-    <!-- Material 3 Mappings for Dark Theme -->
-    <color name="md_theme_light_primary">@color/jojo_primary</color>
-    <color name="md_theme_light_onPrimary">#000000</color>
-    <color name="md_theme_light_primaryContainer">@color/jojo_surface</color>
-    <color name="md_theme_light_onPrimaryContainer">@color/jojo_text_primary</color>
-    <color name="md_theme_light_surface">@color/jojo_surface</color>
-    <color name="md_theme_light_background">@color/jojo_background</color>
-    <color name="md_theme_light_onSurface">@color/jojo_text_primary</color>
-
-    <!-- Legacy -->
+    <!-- Fondos -->
+    <color name="background">#0D1117</color>
+    <color name="card_background">#161B22</color>
+    <color name="surface">#161B22</color>
+    
+    <!-- Textos -->
+    <color name="text_primary">#F0F0F0</color>
+    <color name="text_secondary">#C4B5FD</color>
+    <color name="text_tertiary">#8B8B8B</color>
+    
+    <!-- Estados -->
+    <color name="destructive">#EF4444</color>
+    <color name="destructive_foreground">#FFFFFF</color>
+    <color name="success">#10B981</color>
+    
+    <!-- Transparencias para sombras y overlays -->
+    <color name="primary_alpha_10">#1AFF6B9D</color>
+    <color name="primary_alpha_20">#33FF6B9D</color>
+    <color name="primary_alpha_30">#4DFF6B9D</color>
+    <color name="primary_alpha_50">#80FF6B9D</color>
+    
+    <color name="secondary_alpha_10">#1A8B5CF6</color>
+    <color name="secondary_alpha_20">#338B5CF6</color>
+    <color name="secondary_alpha_30">#4D8B5CF6</color>
+    
+    <color name="accent_alpha_20">#33FBBF24</color>
+    <color name="accent_alpha_50">#80FBBF24</color>
+    
+    <!-- Legacy / Compatibilidad -->
+    <color name="jojo_primary">@color/primary</color>
+    <color name="jojo_secondary">@color/secondary</color>
+    <color name="jojo_accent">@color/accent</color>
+    <color name="jojo_background">@color/background</color>
+    <color name="jojo_surface">@color/card_background</color>
+    <!-- Compat para layouts antiguos -->
+    <color name="jojo_surface_light">@color/surface</color>
+    <color name="jojo_text_primary">@color/text_primary</color>
+    <color name="jojo_text_secondary">@color/text_secondary</color>
+    <color name="jojo_text_highlight">@color/text_secondary</color>
+    <color name="jojo_purple">@color/secondary</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
-    <color name="bottom_nav_color">@color/jojo_primary</color>
+    <color name="bottom_nav_color">@color/primary</color>
 </resources>

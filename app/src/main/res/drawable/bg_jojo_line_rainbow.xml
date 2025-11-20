@@ -3,8 +3,8 @@
     android:shape="rectangle">
     <gradient
         android:angle="0"
-        android:startColor="@color/jojo_primary"
-        android:centerColor="@color/jojo_accent"
-        android:endColor="@color/jojo_secondary"
+        android:startColor="@color/primary"
+        android:centerColor="@color/accent"
+        android:endColor="@color/secondary"
         android:type="linear" />
 </shape>

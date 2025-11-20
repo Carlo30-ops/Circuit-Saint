@@ -16,6 +16,7 @@ app/build/
 
 # Local properties
 local.properties
+keystore.properties
 
 # Captures
 captures/

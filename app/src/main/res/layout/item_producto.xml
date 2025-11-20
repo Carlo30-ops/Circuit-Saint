@@ -1,106 +1,122 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/Widget.Neon.Card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="16dp">
-
-    <androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_margin="8dp"
+    app:cardElevation="8dp"
+    app:cardCornerRadius="8dp"
+    app:strokeWidth="2dp"
+    app:strokeColor="@color/primary_alpha_20"
+    app:cardBackgroundColor="@color/card_background">
+    
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
-
-        <!-- Image Container with Neon Border -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/imageCard"
+        android:orientation="vertical"
+        android:padding="12dp">
+        
+        <!-- Contenedor de imagen -->
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:cardCornerRadius="12dp"
-            app:strokeWidth="2dp"
-            app:strokeColor="@color/jojo_primary"
-            app:cardBackgroundColor="@color/white"
-            app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            android:layout_weight="1"
+            android:minHeight="180dp">
             
+            <!-- Imagen del producto -->
             <ImageView
                 android:id="@+id/productImage"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                android:src="@drawable/ic_launcher_foreground" />
-                
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Category Badge -->
+                android:background="@drawable/bg_jojo_card_gradient"
+                tools:src="@drawable/ic_launcher_foreground" />
+            
+            <!-- Badge de stock bajo -->
+            <TextView
+                android:id="@+id/lowStockBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|end"
+                android:layout_margin="8dp"
+                android:background="@drawable/bg_neon_button"
+                android:padding="6dp"
+                android:text="⚡ ÚLTIMAS UNIDADES"
+                android:textColor="@color/destructive_foreground"
+                android:textSize="10sp"
+                android:visibility="gone"
+                tools:visibility="visible" />
+            
+            <!-- Línea decorativa inferior -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_gravity="bottom"
+                android:background="@drawable/bg_jojo_line_rainbow"
+                android:layout_margin="8dp" />
+        </FrameLayout>
+        
+        <!-- Badge de categoría -->
         <TextView
             android:id="@+id/categoryBadge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
+            android:layout_marginBottom="8dp"
             android:background="@drawable/bg_neon_button"
-            android:paddingHorizontal="12dp"
-            android:paddingVertical="4dp"
+            android:padding="6dp"
             android:text="★ Audio ★"
-            android:textColor="@color/white"
+            android:textColor="@color/secondary_foreground"
             android:textSize="12sp"
             android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageCard" />
-
+            android:letterSpacing="0.15"
+            tools:text="★ Audio ★" />
+        
+        <!-- Nombre del producto -->
         <TextView
             android:id="@+id/productName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="AUDÍFONOS BLUETOOTH PREMIUM"
-            android:textColor="@color/white"
-            android:textSize="16sp"
+            android:layout_marginBottom="8dp"
+            android:text="Audífonos Bluetooth Premium"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp"
             android:textStyle="bold"
-            android:textAllCaps="true"
-            android:fontFamily="sans-serif-condensed"
-            app:layout_constraintTop_toBottomOf="@+id/categoryBadge" />
-
+            android:maxLines="2"
+            android:ellipsize="end"
+            tools:text="Audífonos Bluetooth Premium" />
+        
+        <!-- Precio -->
         <TextView
             android:id="@+id/productPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="$ 120.000"
-            android:textColor="@color/jojo_accent"
-            android:textSize="24sp"
+            android:layout_marginBottom="12dp"
+            android:text="$120.000"
+            android:textColor="@color/accent"
+            android:textSize="20sp"
             android:textStyle="bold"
-            android:fontFamily="sans-serif-condensed"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/productName" />
-            
-        <TextView
-            android:id="@+id/productDescription"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"/>
-            
-        <View
-            android:id="@+id/decorativeLine"
-            android:layout_width="100dp"
-            android:layout_height="2dp"
-            android:layout_marginTop="8dp"
-            android:background="@color/jojo_accent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/productPrice"/>
-            
-        <!-- Hidden button for click handling -->
-        <Button
+            android:letterSpacing="0.1"
+            tools:text="$120.000" />
+        
+        <!-- Botón agregar al carrito -->
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/addToCartButton"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:visibility="gone"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"/>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🛒 AGREGAR AL CARRITO"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.15"
+            app:backgroundTint="@color/primary"
+            app:cornerRadius="8dp"
+            app:strokeWidth="2dp"
+            app:strokeColor="@color/primary_alpha_30"
+            app:iconGravity="textStart"
+            app:iconTint="@color/primary_foreground"
+            style="@style/Widget.Material3.Button.ElevatedButton"
+            tools:text="🛒 AGREGAR AL CARRITO" />
+    </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

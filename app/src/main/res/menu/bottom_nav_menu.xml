@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/homeFragment"
+        android:title="TIENDA"
+        android:icon="@android:drawable/ic_menu_view" />
+    
+    <item
+        android:id="@+id/mapFragment"
+        android:title="UBICACIÓN"
+        android:icon="@android:drawable/ic_menu_mylocation" />
+    
+    <item
+        android:id="@+id/qrScannerFragment"
+        android:title="SCANNER"
+        android:icon="@android:drawable/ic_menu_camera" />
+    
+    <item
+        android:id="@+id/contactFormFragment"
+        android:title="CONTACTO"
+        android:icon="@android:drawable/ic_menu_call" />
+    
+    <item
+        android:id="@+id/cartFragment"
+        android:title="CARRITO"
+        android:icon="@android:drawable/ic_menu_view" />
+</menu>
+

@@ -7,20 +7,23 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.circuitsaint.R
 import com.circuitsaint.databinding.ActivityCartBinding
 import com.circuitsaint.data.db.CartItemWithProduct
+import com.circuitsaint.domain.Result
 import com.circuitsaint.viewmodel.StoreViewModel
-import com.circuitsaint.viewmodel.StoreViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import timber.log.Timber
 
+@AndroidEntryPoint
 class CartActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityCartBinding
-    private val viewModel: StoreViewModel by viewModels {
-        StoreViewModelFactory(application)
-    }
+    private val viewModel: StoreViewModel by viewModels()
 
     private lateinit var cartAdapter: CartAdapter
 
@@ -131,20 +134,34 @@ class CartActivity : AppCompatActivity() {
                 }
                 
                 viewModel.checkout(nombre, email, telefono)
-                viewModel.checkoutState.observe(this) { order ->
-                    if (order != null) {
-                        Toast.makeText(
-                            this,
-                            "¡Compra exitosa! Pedido: ${order.numero_pedido}\nTotal: $${String.format("%.2f", order.total)}",
-                            Toast.LENGTH_LONG
-                        ).show()
-                        finish()
-                    } else {
-                        Toast.makeText(
-                            this,
-                            "Error: No hay suficiente stock para algunos productos",
-                            Toast.LENGTH_LONG
-                        ).show()
+                lifecycleScope.launch {
+                    viewModel.checkoutState.collect { result ->
+                        when (result) {
+                            is Result.Success -> {
+                                val order = result.data
+                                Toast.makeText(
+                                    this@CartActivity,
+                                    "¡Compra exitosa! Pedido: ${order.numero_pedido}\nTotal: $${String.format("%.2f", order.total)}",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                                viewModel.clearCheckoutState()
+                                finish()
+                            }
+                            is Result.Error -> {
+                                Toast.makeText(
+                                    this@CartActivity,
+                                    result.message ?: "Error al procesar la compra",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                                viewModel.clearCheckoutState()
+                            }
+                            is Result.Loading -> {
+                                // Mostrar loading si es necesario
+                            }
+                            null -> {
+                                // Estado inicial
+                            }
+                        }
                     }
                 }
             }

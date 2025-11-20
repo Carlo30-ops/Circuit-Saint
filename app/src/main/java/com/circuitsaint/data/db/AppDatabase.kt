@@ -1,14 +1,15 @@
 package com.circuitsaint.data.db
 
-import android.content.Context
 import androidx.room.Database
-import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.circuitsaint.data.db.migrations.MIGRATION_1_2
+import com.circuitsaint.data.db.migrations.MIGRATION_2_3
 import com.circuitsaint.data.model.CartItem
 import com.circuitsaint.data.model.Contact
 import com.circuitsaint.data.model.Order
 import com.circuitsaint.data.model.OrderItem
 import com.circuitsaint.data.model.Product
+import com.circuitsaint.util.Config
 
 @Database(
     entities = [
@@ -18,7 +19,7 @@ import com.circuitsaint.data.model.Product
         OrderItem::class,
         Contact::class
     ],
-    version = 3,
+    version = Config.DATABASE_VERSION,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -30,23 +31,15 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun contactDao(): ContactDao
     
     companion object {
-        @Volatile
-        private var INSTANCE: AppDatabase? = null
-        
-        fun getDatabase(context: Context): AppDatabase {
-            return INSTANCE ?: synchronized(this) {
-                val instance = Room.databaseBuilder(
-                    context.applicationContext,
-                    AppDatabase::class.java,
-                    "circuit_saint_database"
-                )
-                    .fallbackToDestructiveMigration()
-                    .allowMainThreadQueries() // Solo para seed data inicial
-                    .build()
-                INSTANCE = instance
-                instance
-            }
-        }
+        /**
+         * Lista de migraciones disponibles
+         * IMPORTANTE: Siempre agregar nuevas migraciones aquí
+         * Esta lista se usa en DatabaseModule para configurar Room
+         */
+        val MIGRATIONS = arrayOf(
+            MIGRATION_1_2,
+            MIGRATION_2_3
+        )
     }
 }
 

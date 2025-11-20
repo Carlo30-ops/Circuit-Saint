@@ -2,8 +2,8 @@ package com.circuitsaint.ui
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.circuitsaint.R
@@ -12,7 +12,7 @@ import com.circuitsaint.databinding.ItemProductoBinding
 
 class ProductoAdapter(
     private val onItemClick: (Product) -> Unit
-) : ListAdapter<Product, ProductoAdapter.ProductoViewHolder>(ProductDiffCallback()) {
+) : PagingDataAdapter<Product, ProductoAdapter.ProductoViewHolder>(ProductDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductoViewHolder {
         val binding = ItemProductoBinding.inflate(
@@ -24,7 +24,10 @@ class ProductoAdapter(
     }
 
     override fun onBindViewHolder(holder: ProductoViewHolder, position: Int) {
-        holder.bind(getItem(position), onItemClick)
+        val product = getItem(position)
+        product?.let {
+            holder.bind(it, onItemClick)
+        }
     }
 
     class ProductoViewHolder(
@@ -33,13 +36,15 @@ class ProductoAdapter(
 
         fun bind(product: Product, onItemClick: (Product) -> Unit) {
             binding.productName.text = product.name
-            binding.productDescription.text = product.description
-            binding.productPrice.text = "$${String.format("%.2f", product.price)}"
+            // El layout actual no muestra descripción; centramos la info en nombre, categoría y precio
+            binding.productPrice.text = String.format("$%.0f", product.price)
 
+            // Cargar imagen con Glide
             Glide.with(binding.productImage.context)
                 .load(product.imageUrl)
-                .placeholder(R.drawable.ic_placeholder_image)
-                .error(R.drawable.ic_placeholder_image)
+                .placeholder(R.drawable.placeholder_product)
+                .error(R.drawable.placeholder_product)
+                .centerCrop()
                 .into(binding.productImage)
 
             binding.addToCartButton.setOnClickListener {

@@ -2,13 +2,27 @@
 # You can control the set of applied configuration files using the
 # proguardFiles setting in build.gradle.
 
-# Room
+# ==================== Room ====================
 -keep class * extends androidx.room.RoomDatabase
 -keep @androidx.room.Entity class *
+-keep @androidx.room.Dao class *
+-keep class * extends androidx.room.RoomDatabase
 -dontwarn androidx.room.paging.**
+-keep class androidx.room.paging.** { *; }
 
 # Keep data classes
 -keep class com.circuitsaint.data.model.** { *; }
+-keep class com.circuitsaint.data.db.** { *; }
+
+# ==================== Hilt ====================
+-keep class dagger.hilt.** { *; }
+-keep class javax.inject.** { *; }
+-keep class * extends dagger.hilt.android.internal.managers.ViewComponentManager$FragmentContextWrapper { *; }
+-dontwarn dagger.hilt.**
+
+# ==================== Paging3 ====================
+-keep class androidx.paging.** { *; }
+-dontwarn androidx.paging.**
 
 # Google Maps
 -keep class com.google.android.gms.maps.** { *; }

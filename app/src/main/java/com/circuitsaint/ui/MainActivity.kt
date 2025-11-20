@@ -1,12 +1,16 @@
 package com.circuitsaint.ui
 
-import android.content.Intent
+import android.graphics.LinearGradient
+import android.graphics.Shader
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
 import com.circuitsaint.R
 import com.circuitsaint.databinding.ActivityMainBinding
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     
     private lateinit var binding: ActivityMainBinding
@@ -16,47 +20,41 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         
-        // Inicializar seed data si es necesario
-        com.circuitsaint.util.DatabaseSeeder.seedDatabase(this)
-        
-        setupBottomNavigation()
-        
-        if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, HomeFragment())
-                .commitNow()
-        }
+        // Configurar Navigation Component
+        setupNavigation()
+        applyLogoGradient()
     }
     
-    private fun setupBottomNavigation() {
-        binding.bottomNavigation.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.nav_home -> {
-                    supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, HomeFragment())
-                        .commit()
-                    true
-                }
-                R.id.nav_map -> {
-                    supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, MapFragment())
-                        .commit()
-                    true
-                }
-                R.id.nav_qr -> {
-                    supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, QrScannerFragment())
-                        .commit()
-                    true
-                }
-                R.id.nav_cart -> {
-                    val intent = CartActivity.newIntent(this)
-                    startActivity(intent)
-                    true
-                }
-                else -> false
-            }
+    private fun setupNavigation() {
+        val navHostFragment = supportFragmentManager
+            .findFragmentById(R.id.nav_host_fragment) as? NavHostFragment
+        val navController = navHostFragment?.navController
+        
+        navController?.let {
+            binding.bottomNavigationView.setupWithNavController(it)
         }
+    }
+
+    private fun applyLogoGradient() {
+        val textView = binding.toolbar.findViewById<android.widget.TextView>(R.id.logoTitle)
+        val text = textView.text.toString()
+        if (text.isEmpty()) return
+        val width = textView.paint.measureText(text)
+        val shader = LinearGradient(
+            0f,
+            0f,
+            width,
+            0f,
+            intArrayOf(
+                android.graphics.Color.parseColor("#FF6B9D"),
+                android.graphics.Color.parseColor("#FBBF24"),
+                android.graphics.Color.parseColor("#8B5CF6")
+            ),
+            null,
+            Shader.TileMode.CLAMP
+        )
+        textView.paint.shader = shader
+        textView.invalidate()
     }
 }
 

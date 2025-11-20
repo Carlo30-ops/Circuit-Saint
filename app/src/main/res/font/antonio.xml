@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<font-family xmlns:android="http://schemas.android.com/apk/res/android">
+    <font
+        android:fontProviderAuthority="com.google.android.gms.fonts"
+        android:fontProviderPackage="com.google.android.gms"
+        android:fontProviderQuery="name=Antonio&amp;weight=400"
+        android:fontProviderCerts="@array/com_google_android_gms_fonts_certs"
+        android:fontStyle="normal"
+        android:fontWeight="400" />
+    <font
+        android:fontProviderAuthority="com.google.android.gms.fonts"
+        android:fontProviderPackage="com.google.android.gms"
+        android:fontProviderQuery="name=Antonio&amp;weight=500"
+        android:fontProviderCerts="@array/com_google_android_gms_fonts_certs"
+        android:fontStyle="normal"
+        android:fontWeight="500" />
+    <font
+        android:fontProviderAuthority="com.google.android.gms.fonts"
+        android:fontProviderPackage="com.google.android.gms"
+        android:fontProviderQuery="name=Antonio&amp;weight=600"
+        android:fontProviderCerts="@array/com_google_android_gms_fonts_certs"
+        android:fontStyle="normal"
+        android:fontWeight="600" />
+    <font
+        android:fontProviderAuthority="com.google.android.gms.fonts"
+        android:fontProviderPackage="com.google.android.gms"
+        android:fontProviderQuery="name=Antonio&amp;weight=700"
+        android:fontProviderCerts="@array/com_google_android_gms_fonts_certs"
+        android:fontStyle="normal"
+        android:fontWeight="700" />
+</font-family>
+
