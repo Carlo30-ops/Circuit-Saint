@@ -28,8 +28,14 @@ interface ProductDao {
     /**
      * PagingSource para búsqueda paginada
      */
-    @Query("SELECT * FROM products WHERE activo = 1 AND name LIKE '%' || :query || '%' ORDER BY created_at DESC")
-    fun searchProductsPaged(query: String): PagingSource<Int, Product>
+    @Query("""
+        SELECT * FROM products
+        WHERE activo = 1
+        AND (:category IS NULL OR categoria = :category)
+        AND name LIKE '%' || :query || '%'
+        ORDER BY created_at DESC
+    """)
+    fun searchProductsPaged(query: String, category: String?): PagingSource<Int, Product>
     
     @Query("SELECT * FROM products WHERE activo = 1 ORDER BY created_at DESC")
     fun getAllProductsFlow(): Flow<List<Product>>

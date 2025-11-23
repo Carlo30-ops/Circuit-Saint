@@ -1,101 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
     android:background="@color/background"
+    android:padding="32dp"
     tools:context=".ui.QrScannerFragment">
 
-    <!-- Estado inicial -->
-    <LinearLayout
-        android:id="@+id/initialStateLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/qr_section_title"
+        android:textAppearance="@style/TextAppearance.CircuitSaint.HeadlineLarge"
+        android:textColor="@color/primary"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/qr_section_subtitle"
+        android:textAppearance="@style/TextAppearance.CircuitSaint.BodyLarge"
+        android:textColor="@color/text_secondary"
         android:gravity="center"
-        android:padding="32dp">
+        android:layout_marginBottom="24dp" />
 
-        <ImageView
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:src="@android:drawable/ic_menu_camera"
-            android:tint="@color/secondary"
-            android:layout_marginBottom="16dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="SCANNER QR"
-            android:textAppearance="@style/TextAppearance.CircuitSaint.HeadlineLarge"
-            android:textColor="@color/primary"
-            android:layout_marginBottom="8dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Activa la cámara para escanear un código JoJo"
-            android:textAppearance="@style/TextAppearance.CircuitSaint.BodyLarge"
-            android:textColor="@color/text_secondary"
-            android:layout_marginBottom="24dp" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/startScanButton"
-            style="@style/Widget.Neon.Button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="ACTIVAR CÁMARA" />
-    </LinearLayout>
-
-    <!-- Estado escaneando -->
-    <LinearLayout
-        android:id="@+id/scanningLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="center"
+    <ImageView
+        android:id="@+id/qrImage"
+        android:layout_width="260dp"
+        android:layout_height="260dp"
+        android:src="@drawable/qr_fixed"
+        android:background="@drawable/gradient_card_background"
         android:padding="16dp"
-        android:visibility="gone">
+        android:contentDescription="@string/qr_section_title" />
 
-        <androidx.camera.view.PreviewView
-            android:id="@+id/previewView"
-            android:layout_width="280dp"
-            android:layout_height="280dp"
-            android:background="@drawable/bg_jojo_card" />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/openContactButton"
+        style="@style/Widget.Neon.Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/qr_open_contact"
+        android:layout_marginTop="32dp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="COLOCA EL CÓDIGO QR DENTRO DEL MARCO"
-            android:textAppearance="@style/TextAppearance.CircuitSaint.BodyLarge"
-            android:textColor="@color/text_secondary"
-            android:layout_marginTop="16dp" />
-    </LinearLayout>
-
-    <!-- Estado resultado -->
-    <LinearLayout
-        android:id="@+id/resultLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:padding="24dp"
-        android:visibility="gone">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Resultado QR"
-            android:textAppearance="@style/TextAppearance.CircuitSaint.HeadlineLarge"
-            android:textColor="@color/accent"
-            android:layout_marginBottom="12dp" />
-
-        <TextView
-            android:id="@+id/scannedDataTextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@color/text_primary"
-            android:textAppearance="@style/TextAppearance.CircuitSaint.BodyLarge" />
-    </LinearLayout>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

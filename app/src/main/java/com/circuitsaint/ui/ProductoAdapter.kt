@@ -1,6 +1,7 @@
 package com.circuitsaint.ui
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
@@ -9,9 +10,11 @@ import com.bumptech.glide.Glide
 import com.circuitsaint.R
 import com.circuitsaint.data.model.Product
 import com.circuitsaint.databinding.ItemProductoBinding
+import com.circuitsaint.util.FormatUtils
 
 class ProductoAdapter(
-    private val onItemClick: (Product) -> Unit
+    private val onItemClick: (Product) -> Unit,
+    private val onAddToCart: (Product) -> Unit
 ) : PagingDataAdapter<Product, ProductoAdapter.ProductoViewHolder>(ProductDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductoViewHolder {
@@ -26,7 +29,7 @@ class ProductoAdapter(
     override fun onBindViewHolder(holder: ProductoViewHolder, position: Int) {
         val product = getItem(position)
         product?.let {
-            holder.bind(it, onItemClick)
+            holder.bind(it, onItemClick, onAddToCart)
         }
     }
 
@@ -34,12 +37,16 @@ class ProductoAdapter(
         private val binding: ItemProductoBinding
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(product: Product, onItemClick: (Product) -> Unit) {
+        fun bind(
+            product: Product,
+            onItemClick: (Product) -> Unit,
+            onAddToCart: (Product) -> Unit
+        ) {
             binding.productName.text = product.name
-            // El layout actual no muestra descripción; centramos la info en nombre, categoría y precio
-            binding.productPrice.text = String.format("$%.0f", product.price)
+            binding.productPrice.text = FormatUtils.formatPrice(product.price)
+            binding.categoryBadge.text = "★ ${product.categoria} ★"
+            binding.lowStockBadge.visibility = if (product.stock < 5) View.VISIBLE else View.GONE
 
-            // Cargar imagen con Glide
             Glide.with(binding.productImage.context)
                 .load(product.imageUrl)
                 .placeholder(R.drawable.placeholder_product)
@@ -47,8 +54,15 @@ class ProductoAdapter(
                 .centerCrop()
                 .into(binding.productImage)
 
+            binding.addToCartButton.isEnabled = product.stock > 0
+            binding.addToCartButton.text =
+                if (product.stock > 0) binding.root.context.getString(R.string.add_to_cart_button)
+                else binding.root.context.getString(R.string.sold_out_button)
+
             binding.addToCartButton.setOnClickListener {
-                onItemClick(product)
+                if (product.stock > 0) {
+                    onAddToCart(product)
+                }
             }
 
             binding.root.setOnClickListener {

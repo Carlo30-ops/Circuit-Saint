@@ -5,9 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/jojo_background"
-    tools:context=".ui.FormActivity">
+    tools:context=".ui.ContactFormFragment">
 
-    <!-- Header -->
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
@@ -26,26 +25,26 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical">
-                
+
                 <ImageView
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:src="@android:drawable/ic_dialog_email"
-                    app:tint="@color/jojo_primary"/>
-                    
+                    app:tint="@color/jojo_primary" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="CONTACTO"
                     style="@style/TextAppearance.Neon.Title"
-                    android:layout_marginStart="12dp"/>
+                    android:layout_marginStart="12dp" />
             </LinearLayout>
-            
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
                 android:background="@drawable/bg_jojo_gradient_button"
-                android:layout_marginTop="8dp"/>
+                android:layout_marginTop="8dp" />
         </LinearLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -168,3 +167,4 @@
     </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+

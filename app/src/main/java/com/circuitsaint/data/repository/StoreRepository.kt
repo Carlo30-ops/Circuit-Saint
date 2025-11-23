@@ -51,13 +51,13 @@ class StoreRepository @Inject constructor(
     /**
      * Busca productos paginados
      */
-    fun searchProductsPaginated(query: String): Flow<PagingData<Product>> {
+    fun searchProductsPaginated(query: String, category: String?): Flow<PagingData<Product>> {
         return androidx.paging.Pager(
             config = androidx.paging.PagingConfig(
                 pageSize = Config.PAGE_SIZE,
                 enablePlaceholders = false
             ),
-            pagingSourceFactory = { productDao.searchProductsPaged(query) }
+            pagingSourceFactory = { productDao.searchProductsPaged(query, category) }
         ).flow
     }
     

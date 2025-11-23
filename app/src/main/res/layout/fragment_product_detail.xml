@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/jojo_background"
+    tools:context=".ui.ProductDetailFragment">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/productName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="32sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.1"
+                android:text="CIRCUIT SAINT" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:background="@drawable/bg_jojo_line_rainbow"
+                android:layout_marginVertical="12dp" />
+
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.Neon.Card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/card_background">
+
+                <ImageView
+                    android:id="@+id/productImageDetail"
+                    android:layout_width="match_parent"
+                    android:layout_height="280dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_launcher_foreground"
+                    tools:src="@drawable/ic_launcher_foreground" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                android:id="@+id/categoryBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/bg_neon_button"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="4dp"
+                android:text="★ Audio ★"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/productPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                style="@style/TextAppearance.CircuitSaint.DisplayLarge"
+                android:text="$0" />
+
+            <TextView
+                android:id="@+id/productDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:textColor="@color/text_secondary"
+                android:lineSpacingMultiplier="1.3"
+                tools:text="Descripción" />
+
+            <TextView
+                android:id="@+id/productStock"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:textColor="@color/jojo_accent"
+                tools:text="✓ EN STOCK (10)" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="16dp">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnDecrease"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:text="-"
+                    android:textColor="@color/white"
+                    app:strokeColor="@color/text_secondary" />
+
+                <TextView
+                    android:id="@+id/quantityText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="1"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:layout_marginHorizontal="16dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnIncrease"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:text="+"
+                    android:textColor="@color/white"
+                    app:strokeColor="@color/text_secondary" />
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/addToCartButton"
+                style="@style/Widget.Neon.Button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="AGREGAR AL CARRITO"
+                android:layout_marginTop="24dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnBuyNow"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="COMPRAR AHORA"
+                android:textColor="@color/jojo_accent"
+                app:strokeColor="@color/jojo_accent"
+                android:layout_marginTop="12dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="★ CARACTERÍSTICAS ★"
+                android:textAppearance="@style/TextAppearance.CircuitSaint.HeadlineLarge"
+                android:textColor="@color/primary"
+                android:layout_marginTop="24dp" />
+
+            <TextView
+                android:id="@+id/featuresText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_secondary"
+                android:layout_marginTop="12dp"
+                tools:text="✓ Garantía de 1 año\n✓ Envío gratis\n✓ Devolución en 30 días\n✓ Soporte incluido" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="80dp" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
+

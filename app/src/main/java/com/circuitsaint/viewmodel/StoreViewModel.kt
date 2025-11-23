@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import kotlinx.coroutines.Dispatchers
 import com.circuitsaint.data.db.CartItemWithProduct
 import com.circuitsaint.data.model.Order
 import com.circuitsaint.data.model.Product
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -36,18 +38,17 @@ class StoreViewModel @Inject constructor(
     /**
      * Flow de productos paginados
      */
-    fun getProductsPaginated(): Flow<PagingData<Product>> {
-        return getProductsPaginatedUseCase()
-            .cachedIn(viewModelScope)
-    }
+    fun getProductsPaginated(): Flow<PagingData<Product>> =
+        getProductsPaginatedUseCase().cachedIn(viewModelScope)
     
     /**
      * Flow de búsqueda paginada
      */
-    fun searchProducts(query: String): Flow<PagingData<Product>> {
-        return searchProductsUseCase(query)
-            .cachedIn(viewModelScope)
-    }
+    fun getProductsStream(
+        query: String = "",
+        category: String? = null
+    ): Flow<PagingData<Product>> =
+        searchProductsUseCase(query, category).cachedIn(viewModelScope)
     
     fun getProductByIdLiveData(productId: Long) = repository.getProductByIdLiveData(productId)
     
@@ -87,7 +88,7 @@ class StoreViewModel @Inject constructor(
     // ==================== Cart Operations ====================
     
     fun addToCart(productId: Long, quantity: Int = 1) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val result = addToCartUseCase(productId, quantity)
             if (result is Result.Error) {
                 Timber.e("Error agregando al carrito: ${result.message}")
@@ -96,25 +97,25 @@ class StoreViewModel @Inject constructor(
     }
     
     fun updateCartItemQuantity(cartItemId: Long, quantity: Int) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             repository.updateCartItemQuantity(cartItemId, quantity)
         }
     }
     
     fun removeFromCart(productId: Long) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             repository.removeFromCart(productId)
         }
     }
     
     fun removeCartItem(cartItemId: Long) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             repository.removeCartItem(cartItemId)
         }
     }
     
     fun clearCart() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             repository.clearCart()
         }
     }
@@ -132,7 +133,7 @@ class StoreViewModel @Inject constructor(
     val formSubmissionState: StateFlow<Result<Unit>?> = _formSubmissionState.asStateFlow()
     
     fun submitForm(name: String, email: String, message: String, telefono: String? = null) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             _formSubmissionState.value = Result.Loading
             try {
                 val contact = com.circuitsaint.data.model.Contact(
@@ -156,7 +157,9 @@ class StoreViewModel @Inject constructor(
     
     // ==================== Categories ====================
     
-    suspend fun getCategories(): List<String> = repository.getCategories()
+    suspend fun getCategories(): List<String> = withContext(Dispatchers.IO) {
+        repository.getCategories()
+    }
     
     fun getProductsByCategory(categoria: String) = repository.getProductsByCategory(categoria)
 }

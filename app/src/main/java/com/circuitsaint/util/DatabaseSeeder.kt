@@ -90,6 +90,51 @@ object DatabaseSeeder {
             stock = 18,
             categoria = "Wearables",
             imageUrl = "https://images.unsplash.com/photo-1665860455418-017fa50d29bc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzbWFydHdhdGNoJTIwZml0bmVzcyUyMHRyYWNrZXJ8ZW58MXx8fHwxNzYzNDg1MTUwfDA&ixlib=rb-4.1.0&q=80&w=1080"
+        ),
+        Product(
+            id = 101,
+            name = "Samsung Galaxy S23 Ultra",
+            description = "Smartphone de gama alta con pantalla Dynamic AMOLED 2X de 6.8 pulgadas, cámara de 200 MP y Snapdragon 8 Gen 2.",
+            price = 4899000.0,
+            stock = 10,
+            categoria = "Smartphones",
+            imageUrl = "https://images.unsplash.com/photo-1675864611784-c1a2db279b9e"
+        ),
+        Product(
+            id = 102,
+            name = "Apple iPhone 15 Pro",
+            description = "iPhone con chip A17 Pro, cuerpo en titanio, puerto USB-C y cámaras de última generación.",
+            price = 5999000.0,
+            stock = 8,
+            categoria = "Smartphones",
+            imageUrl = "https://images.unsplash.com/photo-1695048138184-573a755f843f"
+        ),
+        Product(
+            id = 103,
+            name = "Lenovo Legion 5 Pro",
+            description = "Portátil gamer con Ryzen 7, RTX 4060, pantalla QHD+ 165Hz y sistema de refrigeración avanzado.",
+            price = 7999000.0,
+            stock = 5,
+            categoria = "Computadoras",
+            imageUrl = "https://images.unsplash.com/photo-1587202372775-e229f172b3fd"
+        ),
+        Product(
+            id = 104,
+            name = "Apple Watch Series 9",
+            description = "Reloj inteligente con pantalla Always-On, chip S9 y seguimiento avanzado de salud.",
+            price = 1899000.0,
+            stock = 15,
+            categoria = "Wearables",
+            imageUrl = "https://images.unsplash.com/photo-1600294037681-c80b4cb5bbfd"
+        ),
+        Product(
+            id = 105,
+            name = "Xiaomi Pad 6",
+            description = "Tablet ligera con pantalla 144Hz, Snapdragon 870 y batería de 8840 mAh.",
+            price = 1299000.0,
+            stock = 12,
+            categoria = "Tablets",
+            imageUrl = "https://images.unsplash.com/photo-1553379942-4b8b95b0b4a7"
         )
     )
 }

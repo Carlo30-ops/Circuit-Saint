@@ -3,6 +3,25 @@
     <string name="app_name">Circuit Saint</string>
     <string name="price_format">$%.2f</string>
     <string name="price_per_unit_format">$%.2f c/u</string>
-    <string name="total_purchase_format">Compra finalizada. Total: $%.2f</string>
+    <string name="price_per_unit_text">%1$s c/u</string>
+    <string name="total_purchase_format">Compra finalizada. Total: %1$s</string>
     <string name="stock_format">Stock disponible: %d</string>
+    <string name="product_not_found">Producto no encontrado</string>
+    <string name="out_of_stock">Sin stock disponible</string>
+    <string name="added_to_cart">Producto agregado al carrito</string>
+    <string name="product_features_default">✓ Garantía de 1 año\n✓ Envío gratis en compras superiores a $150.000\n✓ Cambios y devoluciones en 30 días\n✓ Soporte técnico incluido</string>
+    <string name="checkout_dialog_title">Datos del Cliente</string>
+    <string name="checkout_positive">Confirmar compra</string>
+    <string name="checkout_negative">Cancelar</string>
+    <string name="cart_empty_message">Tu carrito está vacío</string>
+    <string name="contact_success">Gracias por contactarnos, te responderemos pronto.</string>
+    <string name="contact_error">Ocurrió un error al enviar el formulario</string>
+    <string name="qr_section_title">Escanea este QR</string>
+    <string name="qr_section_subtitle">Presenta este código para acceder al formulario</string>
+    <string name="qr_open_contact">Ir al formulario</string>
+    <string name="enter_name_hint">Nombre completo</string>
+    <string name="enter_email_hint">correo@ejemplo.com</string>
+    <string name="enter_phone_hint">Teléfono (opcional)</string>
+    <string name="add_to_cart_button">🛒 AGREGAR AL CARRITO</string>
+    <string name="sold_out_button">AGOTADO</string>
 </resources>

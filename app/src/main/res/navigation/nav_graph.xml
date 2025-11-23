@@ -21,7 +21,7 @@
         android:label="Detalle del Producto">
         <argument
             android:name="productId"
-            app:argType="string" />
+            app:argType="long" />
         <action
             android:id="@+id/action_productDetail_to_cart"
             app:destination="@id/cartFragment" />

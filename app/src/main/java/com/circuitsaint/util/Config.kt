@@ -13,7 +13,7 @@ object Config {
     
     // Database
     const val DATABASE_NAME = "circuit_saint_database"
-    const val DATABASE_VERSION = 3
+    const val DATABASE_VERSION = 4
     
     // Image Loading
     const val IMAGE_CACHE_SIZE = 50 * 1024 * 1024L // 50MB
@@ -33,4 +33,3 @@ object Config {
     // Performance
     const val LOW_MEMORY_THRESHOLD_MB = 100
 }
-

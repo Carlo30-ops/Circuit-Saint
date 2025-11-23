@@ -99,9 +99,75 @@
                 android:id="@+id/productsRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
                 android:clipToPadding="false"
                 android:paddingBottom="80dp"
                 tools:listitem="@layout/item_producto" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
+
+    <ProgressBar
+        android:id="@+id/loadingIndicator"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:visibility="gone"
+        android:layout_gravity="center" />
+
+    <LinearLayout
+        android:id="@+id/emptyStateGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="32dp"
+        android:layout_gravity="center"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="★ NO HAY PRODUCTOS ★"
+            android:textAppearance="@style/TextAppearance.CircuitSaint.HeadlineLarge"
+            android:textColor="@color/text_secondary"
+            android:gravity="center"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Intenta cambiar la búsqueda o categoría."
+            android:textAppearance="@style/TextAppearance.CircuitSaint.BodyLarge"
+            android:textColor="@color/text_secondary"
+            android:gravity="center" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/errorStateGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="32dp"
+        android:layout_gravity="center"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/errorMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ocurrió un error"
+            android:textAppearance="@style/TextAppearance.CircuitSaint.BodyLarge"
+            android:textColor="@color/destructive"
+            android:gravity="center"
+            android:layout_marginBottom="12dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/errorRetryButton"
+            style="@style/Widget.Neon.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="REINTENTAR" />
+    </LinearLayout>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
